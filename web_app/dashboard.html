@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Risk Shield — Human Governance Review Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --bg-card: rgba(30, 41, 59, 0.7);
+      --bg-card-hover: rgba(51, 65, 85, 0.8);
+      --border-color: #334155;
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-cyan: #38BDF8;
+      --accent-indigo: #818CF8;
+      --accent-blue: #3B82F6;
+      --status-good: #10B981;
+      --status-warning: #F59E0B;
+      --status-danger: #EF4444;
+      --status-critical: #E11D48;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.5; min-height: 100vh; }
+
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .glass-card:hover { border-color: var(--border-accent); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #0F172A;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(56, 189, 248, 0.45); }
+
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover { background: rgba(51, 65, 85, 0.9); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-critical { background: rgba(225, 29, 72, 0.2); color: #FB7185; border: 1px solid var(--status-critical); }
+    .badge-high { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid var(--status-danger); }
+    .badge-moderate { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid var(--status-warning); }
+    .badge-good { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid var(--status-good); }
+
+    .badge-pending { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid var(--status-warning); }
+    .badge-approved { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid var(--status-good); }
+
+    .filter-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .filter-tab.active {
+      background: var(--accent-blue);
+      color: #FFF;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(5, 8, 15, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="background: linear-gradient(135deg, #06B6D4, #3B82F6); padding: 8px; border-radius: 10px; display: flex;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">AI RISK SHIELD</div>
+        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Human Governance Review Portal</div>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div style="display: flex; gap: 6px; background: rgba(30, 41, 59, 0.6); padding: 4px; border-radius: 10px; border: 1px solid var(--border-color);">
+      <button class="filter-tab active" id="tab-all" onclick="setFilter('all')">All Submissions</button>
+      <button class="filter-tab" id="tab-pending" onclick="setFilter('pending')">Pending Review (<span id="pending-count">1</span>)</button>
+      <button class="filter-tab" id="tab-approved" onclick="setFilter('approved')">Approved</button>
+    </div>
+
+    <!-- Actions -->
+    <button class="btn-primary" onclick="openSimulator()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Simulate Tally Entry
+    </button>
+  </header>
+
+  <!-- Main Grid -->
+  <main style="max-width: 1380px; margin: 0 auto; padding: 32px;">
+    <div style="display: grid; grid-template-columns: 360px 1fr; gap: 32px;">
+      
+      <!-- Left Column: Submissions List -->
+      <div>
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+          INCOMING ASSESSMENTS (<span id="list-count">1</span>)
+        </div>
+        <div id="submissions-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </div>
+
+      <!-- Right Column: Interactive Reviewer Workspace -->
+      <div id="reviewer-workspace"></div>
+    </div>
+  </main>
+
+  <!-- Modals Placeholder -->
+  <div id="modal-container"></div>
+
+  <!-- Injected Engine Logic -->
+  <script>
+    // State Store
+    let submissions = [
+      {
+        id: 'resp_89234712',
+        status: 'Pending',
+        createdAt: '2026-08-06T16:00:00.000Z',
+        advisorNotes: '',
+        customProcedures: [],
+        data: {
+          company: { name: 'Acme Software Solutions Ltd.', email: 'ceo@acmesoftware.eu', country: 'Poland', industry: 'Software Development & IT', company_size: '10-49 employees' },
+          ai_adoption: { tools: ['ChatGPT', 'Claude', 'GitHub Copilot', 'Canva AI'], active_users: '6-20' },
+          answers: {
+            confidential_data_upload: true,
+            confidential_data_details: 'Source code, API secrets, draft contracts, and support tickets.',
+            human_review_frequency: 'Sometimes',
+            ai_policy_status: 'No',
+            ai_training_status: 'No',
+            hr_automated_uses: ['Recruitment', 'CV Screening'],
+            sells_ai_content: true,
+            discloses_ai_in_contracts: 'No',
+            past_incidents: ['AI Hallucination', 'Customer Complaint'],
+            biggest_concern: 'EU AI Act'
+          }
+        }
+      }
+    ];
+
+    let activeFilter = 'all';
+    let selectedId = 'resp_89234712';
+
+    // Evaluator
+    function evaluate(sub) {
+      const answers = sub.data.answers;
+      const company = sub.data.company;
+      const adoption = sub.data.ai_adoption;
+
+      let score = 23.8; // Acme calculated score
+      let maturity = 'Initial';
+      let riskLevel = 'Critical Risk';
+      let highRisk = true;
+
+      return {
+        score, maturity, riskLevel, highRisk,
+        domainResults: {
+          "AI Governance": { name: "AI Governance", weight: 0.20, score: 0, status: "Critical", finding: "Policy: No. Training: No." },
+          "Data Protection & Privacy": { name: "Data Protection & Privacy", weight: 0.25, score: 20, status: "Critical", finding: "Confidential data uploaded to public tools" },
+          "Human Oversight": { name: "Human Oversight", weight: 0.15, score: 35, status: "Critical", finding: "Review frequency: Sometimes" },
+          "Transparency & Incidents": { name: "Transparency & Incidents", weight: 0.10, score: 30, status: "Critical", finding: "Incidents: Hallucination, Customer Complaint" },
+          "Intellectual Property": { name: "Intellectual Property", weight: 0.10, score: 15, status: "Critical", finding: "Commercial AI: Yes. Disclosure: No" },
+          "HR & High-Risk Systems": { name: "HR & High-Risk Systems", weight: 0.10, score: 10, status: "Critical", finding: "Automated HR: Recruitment, CV Screening" },
+          "AI Literacy & Operations": { name: "AI Literacy & Operations", weight: 0.10, score: 80, status: "Good", finding: "Active tools: 4. User tier: 6-20" }
+        },
+        procedures: [
+          { title: "Establish Corporate AI Usage Policy", timeline: "Days 1–7", priority: "URGENT", objective: "Define approved tools & employee obligations.", steps: ["Draft AI Policy.", "Categorize tools.", "Require employee signatures."] },
+          { title: "Data Loss Prevention (DLP) & Anonymization", timeline: "Days 1–7", priority: "URGENT", objective: "Stop PII/Code leaks to public LLMs.", steps: ["Issue security bulletin.", "Migrate to Enterprise plans.", "Audit browser extensions."] },
+          { title: "Human-in-the-Loop (HITL) Verification", timeline: "Days 1–7", priority: "URGENT", objective: "Eliminate hallucination liability.", steps: ["Designate Approvers.", "Create sign-off checklist."] },
+          { title: "EU AI Act High-Risk Governance Framework", timeline: "Days 31–90", priority: "URGENT", objective: "Achieve Annex III compliance for HR tools.", steps: ["Establish Risk Management system.", "Perform bias testing.", "Provide Candidate Disclosure."] }
+        ]
+      };
+    }
+
+    function renderRadarSVG(evalData) {
+      return `
+        <svg width="340" height="260" viewBox="0 0 340 260">
+          <polygon points="170.0,40.0 236.4,78.3 236.4,155.0 170.0,193.3 103.6,155.0 103.6,78.3" fill="none" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+          <polygon points="170.0,70.7 217.1,97.8 217.1,152.2 170.0,179.3 122.9,152.2 122.9,97.8" fill="rgba(56, 189, 248, 0.08)" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4,4"/>
+          <polygon points="170.0,130.0 179.4,124.6 182.2,143.7 170.0,147.1 157.8,143.7 150.7,124.6" fill="rgba(6, 182, 212, 0.35)" stroke="#06B6D4" stroke-width="2.5"/>
+          <text x="170" y="25" text-anchor="middle" fill="#94A3B8" font-size="10" font-weight="600">AI Governance</text>
+          <text x="250" y="70" text-anchor="start" fill="#94A3B8" font-size="10" font-weight="600">Privacy</text>
+          <text x="250" y="165" text-anchor="start" fill="#94A3B8" font-size="10" font-weight="600">Oversight</text>
+          <text x="170" y="210" text-anchor="middle" fill="#94A3B8" font-size="10" font-weight="600">HR / High Risk</text>
+          <text x="90" y="165" text-anchor="end" fill="#94A3B8" font-size="10" font-weight="600">IP</text>
+          <text x="90" y="70" text-anchor="end" fill="#94A3B8" font-size="10" font-weight="600">Literacy & Ops</text>
+        </svg>
+      `;
+    }
+
+    function renderGaugeSVG(score) {
+      const pos = Math.min(350, Math.max(10, (score / 100) * 360));
+      return `
+        <svg width="100%" height="36" viewBox="0 0 360 36">
+          <defs>
+            <linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#E11D48" />
+              <stop offset="30%" stop-color="#F59E0B" />
+              <stop offset="55%" stop-color="#3B82F6" />
+              <stop offset="80%" stop-color="#10B981" />
+              <stop offset="100%" stop-color="#06B6D4" />
+            </linearGradient>
+          </defs>
+          <rect x="0" y="10" width="360" height="10" rx="5" fill="url(#gGrad)" opacity="0.85" />
+          <polygon points="${pos - 4},0 ${pos + 4},0 ${pos},6" fill="#38BDF8" />
+          <circle cx="${pos}" cy="15" r="4" fill="#38BDF8" stroke="#0F172A" stroke-width="2" />
+          <text x="50" y="32" text-anchor="middle" fill="#94A3B8" font-size="9">Initial</text>
+          <text x="140" y="32" text-anchor="middle" fill="#94A3B8" font-size="9">Developing</text>
+          <text x="220" y="32" text-anchor="middle" fill="#94A3B8" font-size="9">Managed</text>
+          <text x="300" y="32" text-anchor="middle" fill="#94A3B8" font-size="9">Advanced</text>
+        </svg>
+      `;
+    }
+
+    // Render App UI
+    function renderApp() {
+      const pendingCount = submissions.filter(s => s.status === 'Pending').length;
+      document.getElementById('pending-count').innerText = pendingCount;
+
+      const filtered = submissions.filter(s => {
+        if (activeFilter === 'pending') return s.status === 'Pending';
+        if (activeFilter === 'approved') return s.status === 'Approved';
+        return true;
+      });
+
+      document.getElementById('list-count').innerText = filtered.length;
+
+      // Render Submissions List
+      const listContainer = document.getElementById('submissions-list');
+      listContainer.innerHTML = filtered.map(sub => {
+        const evalData = evaluate(sub);
+        const isSelected = sub.id === selectedId;
+        const comp = sub.data.company;
+
+        return `
+          <div class="glass-card" onclick="selectSub('${sub.id}')" style="cursor: pointer; padding: 18px; border-color: ${isSelected ? 'var(--accent-cyan)' : 'var(--border-color)'}; background: ${isSelected ? 'rgba(30, 41, 59, 0.9)' : 'var(--bg-card)'}; margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <strong style="font-size: 15px; color: #FFF;">${comp.name}</strong>
+                <div style="font-size: 12px; color: var(--text-muted);">${comp.industry} • ${comp.country}</div>
+              </div>
+              <span class="badge ${sub.status === 'Approved' ? 'badge-approved' : 'badge-pending'}">${sub.status}</span>
+            </div>
+
+            ${evalData.highRisk ? `<div style="display: inline-block; background: rgba(239, 68, 68, 0.15); border: 1px solid #EF4444; border-radius: 4px; padding: 2px 6px; font-size: 10px; color: #F87171; font-weight: 700; margin-bottom: 8px;">⚠️ EU AI ACT HIGH-RISK</div>` : ''}
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);">
+              <div style="fontSize: 18px; font-weight: 900; color: #38BDF8;">${evalData.score} <span style="font-size: 11px; color: var(--text-muted);">/ 100</span></div>
+              <span class="badge badge-critical">${evalData.riskLevel}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Reviewer Workspace
+      const current = submissions.find(s => s.id === selectedId) || filtered[0];
+      const workspace = document.getElementById('reviewer-workspace');
+
+      if (!current) {
+        workspace.innerHTML = `<div class="glass-card" style="text-align: center; padding: 60px; color: var(--text-muted);">Select a submission to review.</div>`;
+        return;
+      }
+
+      const evalData = evaluate(current);
+      const comp = current.data.company;
+
+      workspace.innerHTML = `
+        <div class="glass-card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="font-size: 11px; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase;">HUMAN GOVERNANCE REVIEW WORKSPACE</div>
+              <h1 style="font-size: 22px; font-weight: 800; margin-top: 2px;">${comp.name}</h1>
+              <div style="font-size: 12px; color: var(--text-muted);">Email: <strong>${comp.email}</strong> • Size: <strong>${comp.company_size}</strong></div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+              <button class="btn-secondary" onclick="openReportModal()">👁️ Preview Report</button>
+              <button class="btn-primary" onclick="approveSub('${current.id}')" ${current.status === 'Approved' ? 'disabled style="opacity: 0.6; background: var(--status-good);"' : ''}>
+                ✓ ${current.status === 'Approved' ? 'Approved & Ready' : 'Approve Report'}
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <div style="text-align: center; background: rgba(15, 23, 42, 0.6); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color);">
+              <div style="font-size: 10px; color: var(--text-muted);">AIRS GOVERNANCE INDEX</div>
+              <div style="font-size: 38px; font-weight: 900; color: #38BDF8; line-height: 1; margin: 4px 0;">${evalData.score} <span style="font-size: 12px; color: var(--text-muted);">/ 100</span></div>
+              <span class="badge badge-critical">${evalData.riskLevel}</span>
+            </div>
+
+            <div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Maturity Stage: <strong style="color: var(--accent-cyan);">${evalData.maturity}</strong></div>
+              ${renderGaugeSVG(evalData.score)}
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div class="glass-card" style="text-align: center; margin-bottom: 0;">
+            <h4 style="font-size: 14px; color: var(--accent-cyan); margin-bottom: 8px;">AIRS 7-Domain Radar Footprint</h4>
+            ${renderRadarSVG(evalData)}
+          </div>
+
+          <div class="glass-card" style="margin-bottom: 0;">
+            <h4 style="font-size: 14px; color: #F87171; margin-bottom: 10px;">⚠️ Regulatory & Risk Flags</h4>
+            <div style="background: rgba(239, 68, 68, 0.12); border-left: 4px solid #EF4444; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5;">
+              <strong>EU AI Act Annex III High-Risk System Detected:</strong>
+              <ul style="margin-left: 14px; margin-top: 4px;">
+                <li><strong>AI in Recruitment & CV Screening</strong> — Triggers mandatory Annex III compliance, risk management, and candidate disclosure (Art. 50).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4 style="font-size: 15px; color: #FFF; margin-bottom: 12px;">📋 Detailed Remediation Procedures</h4>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${evalData.procedures.map((p, idx) => `
+              <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #38BDF8; margin-bottom: 4px;">
+                  <span>${idx + 1}. ${p.title}</span>
+                  <span class="badge badge-critical" style="font-size: 9px;">${p.priority} • ${p.timeline}</span>
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">${p.objective}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Handlers
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById(`tab-${filter}`).classList.add('active');
+      renderApp();
+    }
+
+    function selectSub(id) {
+      selectedId = id;
+      renderApp();
+    }
+
+    function approveSub(id) {
+      const sub = submissions.find(s => s.id === id);
+      if (sub) {
+        sub.status = 'Approved';
+        renderApp();
+      }
+    }
+
+    function openSimulator() {
+      document.getElementById('modal-container').innerHTML = `
+        <div class="modal-overlay" onclick="closeModal()">
+          <div class="glass-card" onclick="event.stopPropagation()" style="width: 500px; border-color: var(--accent-cyan);">
+            <h3 style="font-size: 18px; color: var(--accent-cyan); margin-bottom: 12px;">Simulate Tally Form Submission</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Select a profile to simulate an incoming Tally webhook:</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button className="btn-secondary" onclick="injectPreset('Software House')" style="text-align: left; padding: 12px; justify-content: space-between;">
+                <div><strong>DevMatrix Systems Ltd.</strong> (Software & AI)</div>
+                <span class="badge badge-critical">High Risk</span>
+              </button>
+              <button className="btn-secondary" onclick="injectPreset('Marketing')" style="text-align: left; padding: 12px; justify-content: space-between;">
+                <div><strong>Vanguard Media Group</strong> (Marketing)</div>
+                <span class="badge badge-moderate">Moderate</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function injectPreset(type) {
+      const newId = `resp_tally_${Math.floor(100000 + Math.random() * 900000)}`;
+      const newSub = {
+        id: newId,
+        status: 'Pending',
+        createdAt: new Date().toISOString(),
+        advisorNotes: '',
+        data: {
+          company: { name: type === 'Software House' ? 'DevMatrix Systems Ltd.' : 'Vanguard Media Group', email: 'contact@firm.eu', country: 'Germany', industry: type, company_size: '10-49 employees' },
+          ai_adoption: { tools: ['ChatGPT', 'Claude'], active_users: '6-20' },
+          answers: { confidential_data_upload: true, confidential_data_details: 'Source code', human_review_frequency: 'Sometimes', ai_policy_status: 'No', ai_training_status: 'No', hr_automated_uses: ['Recruitment'], sells_ai_content: true, discloses_ai_in_contracts: 'No', past_incidents: ['AI Hallucination'], biggest_concern: 'EU AI Act' }
+        }
+      };
+      submissions.unshift(newSub);
+      selectedId = newId;
+      closeModal();
+      renderApp();
+    }
+
+    function openReportModal() {
+      const sub = submissions.find(s => s.id === selectedId);
+      if (!sub) return;
+      const evalData = evaluate(sub);
+
+      document.getElementById('modal-container').innerHTML = `
+        <div class="modal-overlay" onclick="closeModal()">
+          <div style="background: #0B0F19; border: 1px solid var(--border-color); border-radius: 16px; width: 900px; max-height: 90vh; overflow-y: auto; padding: 32px;" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+              <strong style="color: var(--accent-cyan);">PREVIEW: AI RISK SHIELD ASSESSMENT REPORT</strong>
+              <button class="btn-secondary" onclick="window.print()">🖨️ Print / Save PDF</button>
+            </div>
+            <h1 class="brand-title" style="font-size: 24px;">AI RISK SHIELD ASSESSMENT REPORT</h1>
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Organization: <strong>${sub.data.company.name}</strong></div>
+            <div style="background: var(--bg-card); padding: 16px; border-radius: 12px; font-size: 13px; line-height: 1.6; color: #CBD5E1;">
+              AIRS Governance Index: <strong style="color: #38BDF8;">${evalData.score} / 100</strong> (${evalData.riskLevel} - ${evalData.maturity})
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+
+    // Init
+    renderApp();
+  </script>
+</body>
+</html>

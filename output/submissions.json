@@ -1,0 +1,191 @@
+[
+  {
+    "id": "resp_89234712",
+    "status": "Pending",
+    "createdAt": "2026-08-06T16:00:00.000Z",
+    "reportFile": "AI_Risk_Assessment_Acme_Software_Solutions_Ltd.html",
+    "advisorNotes": "",
+    "data": {
+      "company": {
+        "name": "Acme Software Solutions Ltd.",
+        "email": "ceo@acmesoftware.eu",
+        "country": "Poland",
+        "industry": "Software Development & IT",
+        "company_size": "10-49 employees"
+      },
+      "ai_adoption": {
+        "tools": [
+          "ChatGPT",
+          "Claude",
+          "GitHub Copilot",
+          "Canva AI"
+        ],
+        "licensing_tier": "Mostly personal free accounts",
+        "active_users": "6-20",
+        "ai_role_architecture": "Yes, we build custom AI features / RAG / API integrations into our products"
+      },
+      "answers": {
+        "confidential_data_upload": true,
+        "confidential_data_details": "Source code, client API keys, draft contracts, and customer support tickets.",
+        "human_review_frequency": "Sometimes",
+        "ai_policy_status": "No",
+        "ai_training_status": "No",
+        "hr_automated_uses": [
+          "Recruitment",
+          "CV Screening",
+          "Customer Support Chatbots"
+        ],
+        "sells_ai_content": true,
+        "discloses_ai_in_contracts": "No",
+        "past_incidents": [
+          "AI Hallucination",
+          "Customer Complaint"
+        ],
+        "biggest_concern": "EU AI Act"
+      }
+    },
+    "evaluation": {
+      "overallScore": 19.8,
+      "maturityLevel": "Initial",
+      "riskLevel": "Critical Risk",
+      "highRiskFlags": [
+        {
+          "system_name": "AI Integration / Product Architecture",
+          "regulation_reference": "EU AI Act Article 28 — Provider & Integrator Obligations",
+          "severity": "High",
+          "description": "Developing custom AI features, RAG, or integrating LLM APIs classifies your company as an AI Integrator/Provider under the EU AI Act, requiring technical documentation, logging, and security controls."
+        },
+        {
+          "system_name": "AI in Recruitment",
+          "regulation_reference": "EU AI Act — Annex III (High-Risk AI Systems)",
+          "severity": "Critical",
+          "description": "Using AI for 'Recruitment' triggers High-Risk classification under Annex III. Requires risk management, bias testing, and human override."
+        },
+        {
+          "system_name": "AI in CV Screening",
+          "regulation_reference": "EU AI Act — Annex III (High-Risk AI Systems)",
+          "severity": "Critical",
+          "description": "Using AI for 'CV Screening' triggers High-Risk classification under Annex III. Requires risk management, bias testing, and human override."
+        },
+        {
+          "system_name": "AI Customer Support Chatbot",
+          "regulation_reference": "EU AI Act Article 50 — Transparency Obligation for AI Systems",
+          "severity": "High",
+          "description": "Using AI for automated customer interaction requires clear disclosure informing users that they are interacting with an AI system."
+        }
+      ],
+      "domainResults": {
+        "AI Governance": {
+          "name": "AI Governance",
+          "weight": 0.2,
+          "score": 0.0,
+          "status": "Critical",
+          "finding": "Policy status: No. Employee training: No."
+        },
+        "Data Protection & Privacy": {
+          "name": "Data Protection & Privacy",
+          "weight": 0.25,
+          "score": 0.0,
+          "status": "Critical",
+          "finding": "Licensing: Mostly personal free accounts. Uploads: Yes."
+        },
+        "Human Oversight": {
+          "name": "Human Oversight",
+          "weight": 0.15,
+          "score": 35.0,
+          "status": "Critical",
+          "finding": "Output review frequency: Sometimes."
+        },
+        "Transparency & Incidents": {
+          "name": "Transparency & Incidents",
+          "weight": 0.1,
+          "score": 40.0,
+          "status": "Attention",
+          "finding": "Architecture: Yes, we build custom AI features / RAG / API integrations into our products. Incidents: AI Hallucination, Customer Complaint."
+        },
+        "Intellectual Property": {
+          "name": "Intellectual Property",
+          "weight": 0.1,
+          "score": 15.0,
+          "status": "Critical",
+          "finding": "Commercial AI content: Yes. Contract disclosure: No."
+        },
+        "HR & High-Risk Systems": {
+          "name": "HR & High-Risk Systems",
+          "weight": 0.1,
+          "score": 10.0,
+          "status": "Critical",
+          "finding": "Automated use cases: Recruitment, CV Screening, Customer Support Chatbots."
+        },
+        "AI Literacy & Operations": {
+          "name": "AI Literacy & Operations",
+          "weight": 0.1,
+          "score": 80.0,
+          "status": "Good",
+          "finding": "Active tools: ChatGPT, Claude, GitHub Copilot, Canva AI. User tier: 6-20."
+        }
+      },
+      "remediationProcedures": [
+        {
+          "title": "Establish Corporate AI Usage Policy",
+          "timeline": "Days 1–7",
+          "priority": "URGENT",
+          "objective": "Create clear operational rules defining approved AI tools, data restrictions, and employee obligations.",
+          "steps": [
+            "Draft the official Acceptable Use Policy (AUP) for Artificial Intelligence.",
+            "Categorize tools into Approved (Whitelisted), Conditional, and Prohibited (Blacklisted).",
+            "Distribute policy to current employees and require signed acknowledgment."
+          ],
+          "template": "POLICY SNIPPET — CORPORATE AI USAGE POLICY v1.0\n1. APPROVED TOOLS: Only company-provided enterprise AI tools with Zero Data Retention are permitted.\n2. CONFIDENTIALITY: Uploading personal data (PII), customer credentials, or source code into public free models is strictly PROHIBITED.\n3. HUMAN OVERSIGHT: Every employee is personally accountable for verifying AI output before client delivery."
+        },
+        {
+          "title": "Data Loss Prevention (DLP) & Anonymization Protocol",
+          "timeline": "Days 1–7",
+          "priority": "URGENT",
+          "objective": "Prevent unauthorized transmission of customer PII, source code, and API keys to third-party LLM providers.",
+          "steps": [
+            "Issue immediate security bulletin pausing un-sanitized client code and contract uploads.",
+            "Enforce Enterprise Team plans with Zero Data Retention (ZDR).",
+            "Implement automated prompt scrubbing prior to LLM submission."
+          ],
+          "template": "ANONYMIZATION CHECKLIST:\n[ ] Strip customer names, email addresses, and tax IDs.\n[ ] Replace real financial figures with placeholders ([AMOUNT_X]).\n[ ] Strip secret tokens, passwords, and private API keys from code snippets."
+        },
+        {
+          "title": "Human-in-the-Loop (HITL) Output Verification Procedure",
+          "timeline": "Days 1–7",
+          "priority": "URGENT",
+          "objective": "Eliminate legal liability caused by unverified AI hallucinations or errors delivered to clients.",
+          "steps": [
+            "Designate responsible Human Approvers for each department.",
+            "Establish pre-release verification checklist (Fact Check, Security Audit).",
+            "Require sign-off documentation for customer deliverables."
+          ],
+          "template": "HUMAN REVIEW SIGN-OFF:\nProject: ____________________ Reviewer: __________________________\nChecklist: [x] Fact Verification  [x] Security Audit  [x] IP Check\nApproval Signature: ______________________ Date: _________"
+        },
+        {
+          "title": "Client Contract AI Disclosure & IP Clause Integration",
+          "timeline": "Days 8–30",
+          "priority": "HIGH",
+          "objective": "Ensure legal clarity regarding client IP ownership and disclosure of AI assistance in deliverables.",
+          "steps": [
+            "Review Master Services Agreement (MSA) templates.",
+            "Insert standard AI Transparency & IP Warranty clauses."
+          ],
+          "template": "CONTRACT CLAUSE — AI ASSISTANCE DISCLOSURE:\n\"Provider may utilize AI tools (including code assistants) to support deliverables. All deliverables undergo human verification. Provider assigns all IP rights to Client.\" "
+        },
+        {
+          "title": "EU AI Act High-Risk Governance Framework (HR & Customer Chatbots)",
+          "timeline": "Days 31–90",
+          "priority": "URGENT",
+          "objective": "Achieve full compliance with EU AI Act obligations for HR tools and automated chatbots.",
+          "steps": [
+            "Establish Risk Management System (Article 9) for HR screening tools.",
+            "Perform bias testing to prevent discriminatory filtering.",
+            "Implement candidate and chatbot transparency disclosures (Article 50)."
+          ],
+          "template": "CANDIDATE DISCLOSURE NOTICE (EU AI ACT ART. 50):\n\"Please note that Acme Software utilizes AI-assisted screening tools. All final hiring decisions are made exclusively by human recruiters. You have the right to request human review of your application.\" "
+        }
+      ]
+    }
+  }
+]

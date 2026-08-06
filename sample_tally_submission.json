@@ -1,0 +1,134 @@
+{
+  "eventId": "evt_tally_test_123456",
+  "eventType": "FORM_RESPONSE",
+  "createdAt": "2026-08-06T16:00:00.000Z",
+  "data": {
+    "responseId": "resp_89234712",
+    "submissionId": "sub_98127391",
+    "respondentId": "resp_user_001",
+    "formId": "dWokLD",
+    "formName": "AI Risk & Liability Audit (EU Market)",
+    "fields": [
+      {
+        "key": "company_name",
+        "label": "Company Name",
+        "type": "INPUT_TEXT",
+        "value": "Acme Software Solutions Ltd."
+      },
+      {
+        "key": "corporate_email",
+        "label": "Corporate Email",
+        "type": "INPUT_EMAIL",
+        "value": "ceo@acmesoftware.eu"
+      },
+      {
+        "key": "country",
+        "label": "Country of Operation",
+        "type": "DROPDOWN",
+        "value": "Poland"
+      },
+      {
+        "key": "industry",
+        "label": "Industry",
+        "type": "DROPDOWN",
+        "value": "Software Development & IT"
+      },
+      {
+        "key": "company_size",
+        "label": "Company Size",
+        "type": "MULTIPLE_CHOICE",
+        "value": "10-49 employees"
+      },
+      {
+        "key": "ai_tools",
+        "label": "Which AI tools does your company currently use?",
+        "type": "CHECKBOXES",
+        "value": ["ChatGPT", "Claude", "GitHub Copilot", "Canva AI"]
+      },
+      {
+        "key": "ai_licensing_tier",
+        "label": "Do employees use company-managed paid subscriptions or personal free accounts?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Mostly personal free accounts"
+      },
+      {
+        "key": "active_users",
+        "label": "Approximately how many employees actively use AI every week?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "6-20"
+      },
+      {
+        "key": "confidential_data_upload",
+        "label": "Do employees upload confidential customer or company information into AI tools?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Yes"
+      },
+      {
+        "key": "confidential_data_details",
+        "label": "If yes, what type of information is uploaded?",
+        "type": "INPUT_TEXT",
+        "value": "Source code, client API keys, draft contracts, and customer support tickets."
+      },
+      {
+        "key": "human_review",
+        "label": "Are AI-generated outputs reviewed before being delivered to customers?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Sometimes"
+      },
+      {
+        "key": "ai_policy",
+        "label": "Does your company have an official AI Usage Policy?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "No"
+      },
+      {
+        "key": "ai_training",
+        "label": "Do employees receive AI-related training?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "No"
+      },
+      {
+        "key": "ai_hr_automation",
+        "label": "Is AI used for any of the following?",
+        "type": "CHECKBOXES",
+        "value": ["Recruitment", "CV Screening", "Customer Support Chatbots"]
+      },
+      {
+        "key": "ai_role_architecture",
+        "label": "Does your company develop custom AI software, fine-tune models, or integrate LLM APIs into your products?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Yes, we build custom AI features / RAG / API integrations into our products"
+      },
+      {
+        "key": "sell_ai_content",
+        "label": "Do you sell AI-generated content or code to customers?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Yes"
+      },
+      {
+        "key": "contract_disclose_ai",
+        "label": "If yes, do your contracts disclose AI assistance?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "No"
+      },
+      {
+        "key": "ai_incidents",
+        "label": "Has your company experienced any AI-related incidents during the last 12 months?",
+        "type": "CHECKBOXES",
+        "value": ["AI Hallucination", "Customer Complaint"]
+      },
+      {
+        "key": "biggest_concern",
+        "label": "What is currently your biggest AI concern?",
+        "type": "DROPDOWN",
+        "value": "EU AI Act"
+      },
+      {
+        "key": "consultation_request",
+        "label": "Would you like a complimentary 30-minute consultation to discuss your report?",
+        "type": "MULTIPLE_CHOICE",
+        "value": "Yes"
+      }
+    ]
+  }
+}

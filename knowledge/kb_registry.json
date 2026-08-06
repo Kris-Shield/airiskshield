@@ -1,0 +1,166 @@
+{
+  "version": "0.2.0",
+  "name": "AI Risk Shield Comprehensive Regulatory & Governance Knowledge Base",
+  "last_updated": "2026-08-06",
+  "evidence_levels": {
+    "Level_1": "Official EU & National Regulations (EU AI Act, GDPR/RODO, DORA, NIS2, EU Copyright)",
+    "Level_2": "International Standards & Security Controls (NIST AI RMF 1.0, ISO/IEC 42001, ISO/IEC 27001, KNF)",
+    "Level_3": "Cybersecurity Vulnerability Catalogs (OWASP Top 10 for LLMs)",
+    "Level_4": "Industry Best Practices & Enterprise AI Architectures",
+    "Level_5": "AIRS Internal Scoring & Remediation Protocols"
+  },
+  "regulatory_references": [
+    {
+      "id": "REG_EU_AIA_ART_4",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 4",
+      "title": "AI Literacy Obligation",
+      "citation": "EU AI Act Article 4",
+      "summary": "Providers and deployers of AI systems shall take measures to ensure, to their best extent, a sufficient level of AI literacy of their staff, taking into account their technical knowledge, experience, education, and training."
+    },
+    {
+      "id": "REG_EU_AIA_ANNEX_III",
+      "level": "Level_1",
+      "source": "EU AI Act — Annex III",
+      "title": "High-Risk AI Systems Classification (Employment & Worker Management)",
+      "citation": "EU AI Act Annex III (4a/4b)",
+      "summary": "AI systems intended to be used for recruitment, screening, candidate evaluation, performance monitoring, or employee task allocation are legally classified as High-Risk AI Systems."
+    },
+    {
+      "id": "REG_EU_AIA_ART_9",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 9",
+      "title": "Risk Management System for High-Risk AI",
+      "citation": "EU AI Act Article 9(1-4)",
+      "summary": "High-risk AI systems must establish, implement, document, and maintain a continuous risk management system throughout their lifecycle, identifying known and foreseeable risks."
+    },
+    {
+      "id": "REG_EU_AIA_ART_10",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 10",
+      "title": "Data Governance & Training Data Quality",
+      "citation": "EU AI Act Article 10",
+      "summary": "High-risk AI systems utilizing model training must be developed with data governance and management practices covering dataset design, bias examination, and data mitigation."
+    },
+    {
+      "id": "REG_EU_AIA_ART_11",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 11",
+      "title": "Technical Documentation",
+      "citation": "EU AI Act Article 11 & Annex IV",
+      "summary": "Technical documentation for high-risk AI systems must be drawn up before system release to demonstrate compliance and provide authorities with necessary verification data."
+    },
+    {
+      "id": "REG_EU_AIA_ART_14",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 14",
+      "title": "Human Oversight",
+      "citation": "EU AI Act Article 14(1-4)",
+      "summary": "High-risk AI systems shall be designed and developed in such a way that natural persons can oversee their operation, prevent or minimize risks, and override output."
+    },
+    {
+      "id": "REG_EU_AIA_ART_15",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 15",
+      "title": "Accuracy, Robustness & Cybersecurity",
+      "citation": "EU AI Act Article 15",
+      "summary": "High-risk AI systems shall be resilient against errors, adversarial prompt injection attacks, and unauthorized system access."
+    },
+    {
+      "id": "REG_EU_AIA_ART_28",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 28",
+      "title": "Obligations of AI Integrators and Providers",
+      "citation": "EU AI Act Article 28(1)",
+      "summary": "Any entity that modifies an AI system, fine-tunes models, or integrates LLM APIs into commercial products assumes the legal obligations of an AI Provider."
+    },
+    {
+      "id": "REG_EU_AIA_ART_50",
+      "level": "Level_1",
+      "source": "EU AI Act — Article 50",
+      "title": "Transparency Obligations for Customer AI Systems",
+      "citation": "EU AI Act Article 50(1-2)",
+      "summary": "Providers must ensure that AI systems intended to interact directly with natural persons (chatbots) or generate synthetic content clearly inform users of AI generation."
+    },
+    {
+      "id": "REG_RODO_ART_28_32",
+      "level": "Level_1",
+      "source": "GDPR / RODO — Articles 28 & 32",
+      "title": "Data Processing Agreements & Security of Processing",
+      "citation": "RODO Art. 28, Art. 32",
+      "summary": "Data controllers must execute Data Processing Agreements (DPA) with third-party AI vendors and implement measures to prevent confidential data exposure to public models."
+    },
+    {
+      "id": "REG_EU_DORA",
+      "level": "Level_1",
+      "source": "EU DORA — Regulation (EU) 2022/2554",
+      "title": "Digital Operational Resilience Act (ICT & AI Risk Management)",
+      "citation": "DORA Art. 5-16, Art. 28-44",
+      "summary": "Financial entities must manage ICT third-party risk, including AI vendors and cloud models, establishing continuous security testing and incident reporting."
+    },
+    {
+      "id": "REG_EU_NIS2",
+      "level": "Level_1",
+      "source": "EU NIS2 Directive — Directive (EU) 2022/2555",
+      "title": "Cybersecurity & Supply Chain Risk Management",
+      "citation": "NIS2 Art. 21",
+      "summary": "Essential and important entities must address supply chain security, including vulnerabilities resulting from third-party AI software integrations."
+    },
+    {
+      "id": "REG_EU_COPYRIGHT",
+      "level": "Level_1",
+      "source": "EU Copyright Directive — Directive (EU) 2019/790",
+      "title": "Text & Data Mining (TDM) & Commercial IP Protections",
+      "citation": "EU Copyright Directive Art. 3 & Art. 4",
+      "summary": "Governs the use of copyrighted content in AI model training, dataset extraction, and commercial deliverable ownership rights."
+    },
+    {
+      "id": "STD_ISO_42001",
+      "level": "Level_2",
+      "source": "ISO/IEC 42001:2023",
+      "title": "Artificial Intelligence Management System (AIMS)",
+      "citation": "ISO/IEC 42001 Annex A",
+      "summary": "Provides requirements for establishing, implementing, maintaining, and continually improving an Artificial Intelligence Management System within organizations."
+    },
+    {
+      "id": "STD_NIST_RMF",
+      "level": "Level_2",
+      "source": "NIST AI Risk Management Framework (AI RMF 1.0)",
+      "title": "NIST AI RMF Core Functions (GOVERN, MAP, MEASURE, MANAGE)",
+      "citation": "NIST AI RMF 1.0 Section 3",
+      "summary": "Comprehensive framework for managing AI risks to individuals, organizations, and society through four core governance functions."
+    },
+    {
+      "id": "STD_KNF_CLOUD",
+      "level": "Level_2",
+      "source": "Polish Financial Supervision Authority (KNF)",
+      "title": "Komunikat Chmurowy KNF & AI Risk Standards",
+      "citation": "KNF Cloud Communication Section 4",
+      "summary": "Regulatory requirements for Polish financial institutions utilizing cloud services, SaaS AI tools, and outsourced model processing."
+    },
+    {
+      "id": "SEC_OWASP_LLM_01",
+      "level": "Level_3",
+      "source": "OWASP Top 10 for LLM Applications",
+      "title": "LLM01: Prompt Injection Vulnerability",
+      "citation": "OWASP LLM01",
+      "summary": "Occurs when untrusted user inputs manipulate an LLM's context, altering system behavior or executing unauthorized actions."
+    },
+    {
+      "id": "SEC_OWASP_LLM_02",
+      "level": "Level_3",
+      "source": "OWASP Top 10 for LLM Applications",
+      "title": "LLM02: Sensitive Information Disclosure",
+      "citation": "OWASP LLM02",
+      "summary": "Occurs when an LLM reveals confidential data, PII, source code, or proprietary algorithms through output responses."
+    },
+    {
+      "id": "SEC_OWASP_LLM_06",
+      "level": "Level_3",
+      "source": "OWASP Top 10 for LLM Applications",
+      "title": "LLM06: Excessive Agency & Unchecked Automation",
+      "citation": "OWASP LLM06",
+      "summary": "Granting excessive permissions or autonomous action capabilities to LLM agents without human oversight mechanisms."
+    }
+  ]
+}

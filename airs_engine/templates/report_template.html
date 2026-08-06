@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Risk Shield — Executive Assessment & Visual Remediation Report</title>
+  <style>
+    :root {
+      --primary: #0F172A;
+      --accent-blue: #2563EB;
+      --accent-cyan: #06B6D4;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --card-bg: #1E293B;
+      --text-light: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0B0F19;
+      color: var(--text-light);
+      line-height: 1.6;
+      padding: 40px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .header-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 32px;
+    }
+
+    .brand-title {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38BDF8, #818CF8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .meta-badge {
+      text-align: right;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .score-hero-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .score-card {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(145deg, #1E293B, #0F172A);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .score-number {
+      font-size: 52px;
+      font-weight: 900;
+      color: #38BDF8;
+      line-height: 1;
+      margin: 8px 0 2px 0;
+    }
+
+    .score-max {
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .status-low { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+    .status-moderate { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+    .status-high { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+    .status-critical { background: rgba(225, 29, 72, 0.3); color: #FB7185; border: 1px solid #E11D48; }
+
+    .company-details-list p {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+
+    .company-details-list strong {
+      color: var(--text-light);
+    }
+
+    .section-header {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 36px 0 16px 0;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    .alert-box {
+      background: rgba(239, 68, 68, 0.1);
+      border-left: 4px solid var(--danger);
+      padding: 18px 24px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .domain-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .domain-table th, .domain-table td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 14px;
+    }
+
+    .domain-table th {
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .procedure-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .procedure-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .procedure-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38BDF8;
+    }
+
+    .pill-urgent { background: rgba(239, 68, 68, 0.2); color: #F87171; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
+    .pill-high { background: rgba(245, 158, 11, 0.2); color: #FBBF24; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
+
+    .step-list {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+
+    .step-list li {
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #CBD5E1;
+    }
+
+    .template-box {
+      background: #090D16;
+      border: 1px dashed var(--accent-cyan);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      color: #A5F3FC;
+      margin-top: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .timeline-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .timeline-col {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .timeline-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #38BDF8;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .disclaimer-footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header-banner">
+    <div>
+      <div class="brand-title">AI RISK SHIELD</div>
+      <div class="brand-subtitle">Responsible AI Governance & Visual Audit</div>
+    </div>
+    <div class="meta-badge">
+      <div>Report ID: <strong>{{ response_id }}</strong></div>
+      <div>Date: <strong>{{ submission_date }}</strong></div>
+    </div>
+  </div>
+
+  <!-- Hero Score & Profile -->
+  <div class="score-hero-container">
+    <div class="card score-card">
+      <div class="brand-subtitle">AIRS GOVERNANCE INDEX</div>
+      <div class="score-number">{{ overall_score }} <span class="score-max">/ 100</span></div>
+      <div class="badge-status status-{{ risk_level_slug }}">{{ risk_level }}</div>
+      <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px; margin-bottom: 10px;">Maturity Level: <strong>{{ maturity_level }}</strong></div>
+      
+      <!-- Vector Gauge Bar -->
+      {{ gauge_svg }}
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 16px; margin-bottom: 12px; color: #38BDF8;">Company Profile</h3>
+      <div class="company-details-list">
+        <p>Organization: <strong>{{ company_name }}</strong></p>
+        <p>Email: <strong>{{ corporate_email }}</strong></p>
+        <p>Industry / Country: <strong>{{ industry }} ({{ country }})</strong></p>
+        <p>Company Size: <strong>{{ company_size }}</strong></p>
+        <p>AI Tools Active: <strong>{{ ai_tools_list }}</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="card">
+    <h3 style="font-size: 18px; margin-bottom: 12px; color: #38BDF8;">Executive Summary</h3>
+    <p style="font-size: 14px; color: #CBD5E1;">{{ executive_summary }}</p>
+  </div>
+
+  <!-- EU AI Act Regulatory Alert -->
+  {% if has_high_risk_flags %}
+  <div class="alert-box">
+    <strong style="color: #F87171;">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
+    {{ high_risk_commentary }}
+  </div>
+  {% endif %}
+
+  <!-- Domain Breakdown with Radar Chart -->
+  <div class="section-header">
+    📊 Section 1 — Visual Governance & Radar Evaluation
+  </div>
+
+  <div class="charts-grid">
+    <div class="card" style="text-align: center; margin-bottom: 0;">
+      <h4 style="font-size: 14px; color: #38BDF8; margin-bottom: 12px;">AIRS 7-Domain Maturity Radar</h4>
+      {{ radar_svg }}
+    </div>
+
+    <div style="display: flex; flex-direction: column; justify-content: center;">
+      <h4 style="font-size: 15px; color: #F8FAFC; margin-bottom: 12px;">Visual Maturity Gap Analysis</h4>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+        The spider chart visualizes your organization's score across all 7 AIRS domains against a benchmark target zone (80+). 
+        The area gap highlights critical vulnerability points—particularly in <strong>AI Governance</strong>, <strong>Data Protection</strong>, and <strong>High-Risk AI Compliance</strong>.
+      </p>
+    </div>
+  </div>
+
+  <table class="domain-table" style="margin-bottom: 32px;">
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Weight</th>
+        <th>Score</th>
+        <th>Status</th>
+        <th>Key Finding</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dom_key, dom in domain_results.items() %}
+      <tr>
+        <td><strong>{{ dom.name }}</strong></td>
+        <td>{{ (dom.weight * 100)|int }}%</td>
+        <td><strong>{{ dom.score }}</strong> / 100</td>
+        <td>
+          <span style="font-weight: 700; color: {% if dom.status == 'Good' %}#34D399{% elif dom.status == 'Attention' %}#FBBF24{% else %}#F87171{% endif %};">
+            {{ dom.status }}
+          </span>
+        </td>
+        <td style="color: var(--text-muted); font-size: 13px;">{{ dom.finding }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Detailed Remediation Procedures -->
+  <div class="section-header">
+    📋 Section 2 — Detailed Remediation Procedures
+  </div>
+
+  {% for proc in remediation_procedures %}
+  <div class="procedure-card">
+    <div class="procedure-header">
+      <div class="procedure-title">{{ loop.index }}. {{ proc.title }}</div>
+      <div>
+        <span class="{% if proc.priority == 'URGENT' %}pill-urgent{% else %}pill-high{% endif %}">{{ proc.priority }}</span>
+        <span style="font-size: 11px; margin-left: 6px; color: #38BDF8; font-weight: 700;">{{ proc.timeline }}</span>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;"><strong>Objective:</strong> {{ proc.objective }}</p>
+    <strong style="font-size: 13px; color: #CBD5E1;">Implementation Steps:</strong>
+    <ol class="step-list">
+      {% for step in proc.steps %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endfor %}
+
+  <!-- Implementation Timelines -->
+  <div class="section-header">
+    ⏱️ Section 3 — Implementation Roadmap & Phased Timeline
+  </div>
+
+  <div class="timeline-container">
+    <div class="timeline-col">
+      <div class="timeline-title">Phase 1: Days 1–7</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Immediate Risk Containment</p>
+      {% for item in phase_7_days %}
+      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
+      {% endfor %}
+    </div>
+
+    <div class="timeline-col">
+      <div class="timeline-title">Phase 2: Days 8–30</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Policy & Contract Rollout</p>
+      {% for item in phase_30_days %}
+      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
+      {% endfor %}
+    </div>
+
+    <div class="timeline-col">
+      <div class="timeline-title">Phase 3: Days 31–90</div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">High-Risk AI Compliance</p>
+      {% for item in phase_90_days %}
+      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Policy Templates Appendix -->
+  <div class="section-header">
+    📜 Appendix — Ready-to-Use Policy & Checklist Templates
+  </div>
+
+  {% for t in policy_templates %}
+  <div class="card">
+    <h4 style="font-size: 15px; color: #38BDF8; margin-bottom: 8px;">Template: {{ t.title }}</h4>
+    <div class="template-box">{{ t.template }}</div>
+  </div>
+  {% endfor %}
+
+  <!-- Consultation Banner -->
+  <div class="card" style="background: linear-gradient(135deg, #1E293B, #172554); border: 1px solid #3B82F6; margin-top: 32px;">
+    <h3 style="font-size: 16px; color: #60A5FA; margin-bottom: 6px;">💬 Human Review & Advisory Next Steps</h3>
+    <p style="font-size: 13px; color: #CBD5E1;">
+      This expanded assessment and remediation report has been generated for expert human verification. A complimentary 30-minute consultation 
+      with an AI Risk Shield governance advisor is available to customize these templates and guide your 90-day compliance roadmap.
+    </p>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer-footer">
+    <strong>DISCLAIMER & LIMITATIONS:</strong> {{ disclaimer }}
+  </div>
+
+</body>
+</html>

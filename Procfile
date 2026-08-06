@@ -1,0 +1,1 @@
+web: uvicorn airs_engine.server:app --host 0.0.0.0 --port $PORT

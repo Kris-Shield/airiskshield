@@ -18,8 +18,10 @@ class EmailSender:
         sender_env = os.environ.get("SENDER_EMAIL", "").strip()
         railway_url = os.environ.get("PUBLIC_SERVER_URL", "https://web-production-4e41f.up.railway.app").rstrip("/")
 
-        # Use assigned Resend domain or fallback
+        # Format sender email
         if sender_env:
+            if "<anything>" in sender_env:
+                sender_env = sender_env.replace("<anything>", "audit")
             sender = sender_env
         else:
             sender = "AI Risk Shield <audit@keepelee.resend.app>"
@@ -114,7 +116,8 @@ class EmailSender:
                     data=json.dumps(payload).encode("utf-8"),
                     headers={
                         "Authorization": f"Bearer {resend_key}",
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 AIRiskShield/1.0"
                     }
                 )
 

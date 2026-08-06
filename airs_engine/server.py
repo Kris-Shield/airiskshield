@@ -154,10 +154,22 @@ try:
     def health():
         return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
+    @app.get("/api/webhook/tally")
+    @app.head("/api/webhook/tally")
+    def webhook_tally_get():
+        return {
+            "status": "online",
+            "service": "AI Risk Shield Tally Webhook Receiver",
+            "endpoint": "POST /api/webhook/tally"
+        }
+
     @app.post("/api/webhook/tally")
     async def webhook_tally(request: Request):
         try:
-            raw_data = await request.json()
+            try:
+                raw_data = await request.json()
+            except Exception:
+                raw_data = {}
             record = process_tally_payload(raw_data)
             return {
                 "status": "success",

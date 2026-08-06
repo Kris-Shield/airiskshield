@@ -166,6 +166,17 @@ try:
     def health():
         return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
+    @app.get("/api/debug/env")
+    def debug_env():
+        resend_key = os.environ.get("RESEND_API_KEY", "").strip()
+        sender = os.environ.get("SENDER_EMAIL", "").strip()
+        return {
+            "has_resend_api_key": bool(resend_key),
+            "resend_key_prefix": resend_key[:6] + "..." if resend_key else "MISSING",
+            "has_sender_email": bool(sender),
+            "sender_email_value": sender if sender else "MISSING"
+        }
+
     @app.get("/api/webhook/tally")
     @app.head("/api/webhook/tally")
     def webhook_tally_get():

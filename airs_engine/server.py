@@ -1,7 +1,7 @@
 """
 AIRS Automated API & Webhook Server (Railway & Local Execution)
 Receives live webhooks from Tally.so, calculates AIRS scores, generates vector reports,
-manages the Human Review queue, and serves customer assessment deliverables.
+dispatches customer emails, manages the Human Review queue, and serves customer deliverables.
 """
 
 import os
@@ -14,6 +14,7 @@ from .mapper import TallyDataMapper
 from .scoring import AIRSScoringEngine
 from .report_generator import AIReportGenerator
 from .pdf_exporter import ReportExporter
+from .email_sender import EmailSender
 
 SUBMISSIONS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output", "submissions.json")
 
@@ -41,12 +42,23 @@ def process_tally_payload(raw_json: Dict[str, Any]) -> Dict[str, Any]:
 
     ReportExporter.export_html_report(assessment, scoring, output_path)
 
+    # Dispatch Email to Client
+    email_res = EmailSender.send_assessment_email(
+        recipient_email=assessment.company.email,
+        company_name=assessment.company.name,
+        score=scoring.overall_score,
+        risk_level=scoring.risk_level,
+        report_filename=output_filename,
+        report_filepath=output_path
+    )
+
     submission_record = {
         "id": assessment.response_id,
         "status": "Pending",
         "createdAt": assessment.submission_time,
         "reportFile": output_filename,
         "advisorNotes": "",
+        "emailStatus": email_res.get("status"),
         "data": {
             "company": {
                 "name": assessment.company.name,
@@ -125,7 +137,7 @@ try:
     app = FastAPI(
         title="AI Risk Shield Automated Webhook & API Engine",
         version="0.2.0",
-        description="Receives Tally webhooks, evaluates AIRS scores, and serves reports."
+        description="Receives Tally webhooks, evaluates AIRS scores, dispatches emails, and serves reports."
     )
 
     app.add_middleware(
@@ -173,10 +185,11 @@ try:
             record = process_tally_payload(raw_data)
             return {
                 "status": "success",
-                "message": "Tally submission processed successfully",
+                "message": "Tally submission processed and email dispatched",
                 "responseId": record["id"],
                 "airs_score": record["evaluation"]["overallScore"],
                 "risk_level": record["evaluation"]["riskLevel"],
+                "email_status": record["emailStatus"],
                 "report_file": record["reportFile"]
             }
         except Exception as e:
@@ -196,7 +209,20 @@ try:
                 sub["status"] = "Approved"
                 sub["advisorNotes"] = notes
                 save_submissions_db(db)
-                return {"status": "success", "approvedId": response_id}
+
+                # Re-dispatch email on approval
+                comp = sub["data"]["company"]
+                eval_data = sub["evaluation"]
+                EmailSender.send_assessment_email(
+                    recipient_email=comp["email"],
+                    company_name=comp["name"],
+                    score=eval_data["overallScore"],
+                    risk_level=eval_data["riskLevel"],
+                    report_filename=sub["reportFile"],
+                    report_filepath=os.path.join(os.path.dirname(os.path.dirname(__file__)), "output", sub["reportFile"])
+                )
+
+                return {"status": "success", "approvedId": response_id, "emailDispatched": True}
         raise HTTPException(status_code=404, detail="Submission not found")
 
     @app.get("/reports/{filename}", response_class=HTMLResponse)

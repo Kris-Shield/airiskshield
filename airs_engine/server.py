@@ -59,6 +59,7 @@ def process_tally_payload(raw_json: Dict[str, Any]) -> Dict[str, Any]:
         "reportFile": output_filename,
         "advisorNotes": "",
         "emailStatus": email_res.get("status"),
+        "emailResult": email_res,
         "data": {
             "company": {
                 "name": assessment.company.name,
@@ -201,6 +202,7 @@ try:
                 "airs_score": record["evaluation"]["overallScore"],
                 "risk_level": record["evaluation"]["riskLevel"],
                 "email_status": record["emailStatus"],
+                "email_result": record.get("emailResult"),
                 "report_file": record["reportFile"]
             }
         except Exception as e:
@@ -224,7 +226,7 @@ try:
                 # Re-dispatch email on approval
                 comp = sub["data"]["company"]
                 eval_data = sub["evaluation"]
-                EmailSender.send_assessment_email(
+                email_res = EmailSender.send_assessment_email(
                     recipient_email=comp["email"],
                     company_name=comp["name"],
                     score=eval_data["overallScore"],
@@ -233,7 +235,7 @@ try:
                     report_filepath=os.path.join(os.path.dirname(os.path.dirname(__file__)), "output", sub["reportFile"])
                 )
 
-                return {"status": "success", "approvedId": response_id, "emailDispatched": True}
+                return {"status": "success", "approvedId": response_id, "emailDispatched": True, "emailResult": email_res}
         raise HTTPException(status_code=404, detail="Submission not found")
 
     @app.get("/reports/{filename}", response_class=HTMLResponse)

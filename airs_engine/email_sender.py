@@ -18,13 +18,11 @@ class EmailSender:
         sender_env = os.environ.get("SENDER_EMAIL", "").strip()
         railway_url = os.environ.get("PUBLIC_SERVER_URL", "https://web-production-4e41f.up.railway.app").rstrip("/")
 
-        # Format sender email
-        if sender_env:
-            if "<anything>" in sender_env:
-                sender_env = sender_env.replace("<anything>", "audit")
+        # Use onboarding@resend.dev for test environment or custom verified domain
+        if sender_env and "resend.app" not in sender_env and "<anything>" not in sender_env:
             sender = sender_env
         else:
-            sender = "AI Risk Shield <audit@keepelee.resend.app>"
+            sender = "AI Risk Shield <onboarding@resend.dev>"
 
         report_url = f"{railway_url}/reports/{report_filename}"
 

@@ -18,11 +18,11 @@ class EmailSender:
         sender_env = os.environ.get("SENDER_EMAIL", "").strip()
         railway_url = os.environ.get("PUBLIC_SERVER_URL", "https://web-production-4e41f.up.railway.app").rstrip("/")
 
-        # Use onboarding@resend.dev if test domain or default
-        if not sender_env or "resend.dev" in sender_env:
-            sender = "AI Risk Shield <onboarding@resend.dev>"
-        else:
+        # Use assigned Resend domain or fallback
+        if sender_env:
             sender = sender_env
+        else:
+            sender = "AI Risk Shield <audit@keepelee.resend.app>"
 
         report_url = f"{railway_url}/reports/{report_filename}"
 

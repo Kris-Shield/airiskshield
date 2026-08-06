@@ -15,8 +15,14 @@ class EmailSender:
     @staticmethod
     def send_assessment_email(recipient_email: str, company_name: str, score: float, risk_level: str, report_filename: str, report_filepath: str) -> Dict[str, Any]:
         resend_key = os.environ.get("RESEND_API_KEY", "").strip()
-        sender = os.environ.get("SENDER_EMAIL", "AI Risk Shield Audit <onboarding@resend.dev>").strip()
+        sender_env = os.environ.get("SENDER_EMAIL", "").strip()
         railway_url = os.environ.get("PUBLIC_SERVER_URL", "https://web-production-4e41f.up.railway.app").rstrip("/")
+
+        # Use onboarding@resend.dev if test domain or default
+        if not sender_env or "resend.dev" in sender_env:
+            sender = "AI Risk Shield <onboarding@resend.dev>"
+        else:
+            sender = sender_env
 
         report_url = f"{railway_url}/reports/{report_filename}"
 
@@ -89,7 +95,7 @@ class EmailSender:
                         attachment_content = base64.b64encode(f.read()).decode("utf-8")
 
                 payload = {
-                    "from": sender if "@" in sender else "AI Risk Shield <onboarding@resend.dev>",
+                    "from": sender,
                     "to": [recipient_email],
                     "subject": f"[AIRS AUDIT REPORT] AI Risk & Liability Assessment — {company_name}",
                     "html": email_html

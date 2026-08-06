@@ -7,6 +7,7 @@ via Resend API / SMTP, with fallback simulation mode.
 import os
 import json
 import urllib.request
+import urllib.error
 import base64
 from typing import Dict, Any, Optional
 
@@ -88,7 +89,7 @@ class EmailSender:
                         attachment_content = base64.b64encode(f.read()).decode("utf-8")
 
                 payload = {
-                    "from": sender,
+                    "from": sender if "@" in sender else "AI Risk Shield <onboarding@resend.dev>",
                     "to": [recipient_email],
                     "subject": f"[AIRS AUDIT REPORT] AI Risk & Liability Assessment — {company_name}",
                     "html": email_html
@@ -114,9 +115,14 @@ class EmailSender:
                 with urllib.request.urlopen(req, timeout=10) as response:
                     res_data = json.loads(response.read().decode("utf-8"))
                     return {"status": "sent", "provider": "resend", "emailId": res_data.get("id")}
+
+            except urllib.error.HTTPError as err:
+                err_body = err.read().decode("utf-8") if err.fp else str(err)
+                print(f"[!] Resend API HTTPError: {err.code} - {err_body}")
+                return {"status": "error", "error_code": err.code, "error_details": err_body}
             except Exception as e:
-                # Fallback to simulation mode on API error
-                pass
+                print(f"[!] Resend API Exception: {str(e)}")
+                return {"status": "error", "error_details": str(e)}
 
         # 2. Simulation / Development Mode Output
         print(f"--> [EMAIL DISPATCH SIMULATION] Report email dispatched to: {recipient_email}")

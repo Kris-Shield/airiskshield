@@ -1,5 +1,5 @@
 """
-AIRS Scoring Engine Module (Expanded Version with Licensing & Provider Rules)
+AIRS Scoring Engine Module (Expanded Version with Ultimate Enterprise Rules)
 Computes domain scores, overall AIRS score, maturity level, risk level,
 EU AI Act High-Risk flags, Provider vs Deployer roles, and remediation protocols.
 """
@@ -61,11 +61,11 @@ class AIRSScoringEngine:
         gov_recs = []
         gov_procs = []
 
-        if answers.ai_policy_status == "Yes":
+        if answers.ai_policy_status in ["Yes", "Tak"]:
             gov_score += 60.0
-        elif answers.ai_policy_status == "Currently being prepared":
+        elif answers.ai_policy_status in ["Currently being prepared", "Informal guidelines exist, but no official written policy"]:
             gov_score += 30.0
-            gov_recs.append("Finalize and publish the draft AI Policy across all company departments.")
+            gov_recs.append("Formalize and publish the official written AI Usage Policy across all company departments.")
         else:
             gov_recs.append("Draft and implement an official Corporate AI Usage Policy immediately.")
             gov_procs.append(RemediationProcedure(
@@ -84,13 +84,20 @@ class AIRSScoringEngine:
 3. HUMAN OVERSIGHT: Every employee is personally accountable for verifying AI output before client delivery."""
             ))
 
-        if answers.ai_training_status == "Regularly":
+        if answers.ai_training_status in ["Regularly", "Regularly (Ongoing formal security & prompt governance training)"]:
             gov_score += 40.0
-        elif answers.ai_training_status == "Occasionally":
+        elif answers.ai_training_status in ["Occasionally", "Occasionally (One-off workshops)"]:
             gov_score += 20.0
             gov_recs.append("Formalize regular AI safety and prompt engineering training for employees.")
         else:
             gov_recs.append("Introduce mandatory employee training on responsible AI usage and risk awareness.")
+
+        # Shadow AI Evaluation
+        shadow_lower = adoption.shadow_ai_control.lower()
+        if "sso" in shadow_lower or "network" in shadow_lower or "edr" in shadow_lower or "endpoint" in shadow_lower:
+            gov_score = min(100.0, gov_score + 10.0)
+        elif "informal" in shadow_lower or "trust" in shadow_lower or "none" in shadow_lower:
+            gov_recs.append("Implement technical controls (DNS/SSO/EDR) to detect and manage unmonitored Shadow AI tool usage.")
 
         gov_status = "Good" if gov_score >= 70 else ("Attention" if gov_score >= 40 else "Critical")
         domain_results["AI Governance"] = DomainResult(
@@ -98,7 +105,7 @@ class AIRSScoringEngine:
             weight=0.20,
             score=gov_score,
             status=gov_status,
-            finding=f"Policy status: {answers.ai_policy_status}. Employee training: {answers.ai_training_status}.",
+            finding=f"Policy: {answers.ai_policy_status}. Training: {answers.ai_training_status}. Shadow AI control: {adoption.shadow_ai_control}.",
             recommendations=gov_recs,
             procedures=gov_procs
         )
@@ -116,11 +123,19 @@ class AIRSScoringEngine:
             privacy_score -= 25.0
             privacy_recs.append("Migrate employees from personal free accounts (which train on user prompts) to Enterprise Team subscriptions with Zero Data Retention.")
 
+        # Data Residency evaluation (RODO Art. 44-49)
+        residency_lower = adoption.data_residency.lower()
+        if "eu" in residency_lower or "unim" in residency_lower:
+            privacy_score = min(100.0, privacy_score + 5.0)
+        elif "us" in residency_lower or "global" in residency_lower or "not sure" in residency_lower or "unknown" in residency_lower:
+            privacy_score -= 15.0
+            privacy_recs.append("Verify Data Processing Agreements (DPA) and EU Standard Contractual Clauses (SCC) for US/Cloud AI servers.")
+
         if answers.confidential_data_upload:
-            privacy_score -= 50.0
+            privacy_score -= 40.0
             details_lower = answers.confidential_data_details.lower()
             if any(k in details_lower for k in ["source code", "api key", "password", "ticket", "contract", "financial", "client", "customer"]):
-                privacy_score -= 25.0
+                privacy_score -= 20.0
                 privacy_recs.append("Stop uploading sensitive customer data, source code, or API keys into public AI models.")
                 privacy_procs.append(RemediationProcedure(
                     title="Data Loss Prevention (DLP) & Anonymization Protocol",
@@ -144,7 +159,7 @@ class AIRSScoringEngine:
             weight=0.25,
             score=max(0.0, min(100.0, privacy_score)),
             status=privacy_status,
-            finding=f"Licensing: {adoption.licensing_tier}. Uploads: {'Yes' if answers.confidential_data_upload else 'No'}.",
+            finding=f"Licensing: {adoption.licensing_tier}. Hosting: {adoption.data_residency}. Uploads: {'Yes' if answers.confidential_data_upload else 'No'}.",
             recommendations=privacy_recs,
             procedures=privacy_procs
         )
@@ -155,13 +170,13 @@ class AIRSScoringEngine:
         oversight_procs = []
         rev_freq = answers.human_review_frequency.lower()
 
-        if "always" in rev_freq:
+        if "always" in rev_freq or "zawsze" in rev_freq:
             oversight_score = 100.0
-        elif "usually" in rev_freq:
+        elif "usually" in rev_freq or "zazwyczaj" in rev_freq:
             oversight_score = 70.0
             oversight_recs.append("Enforce 100% human-in-the-loop review for all customer-facing AI deliverables.")
         else:
-            oversight_score = 35.0 if "sometimes" in rev_freq else 0.0
+            oversight_score = 35.0 if ("sometimes" in rev_freq or "czasami" in rev_freq) else 0.0
             oversight_recs.append("URGENT: Establish mandatory human oversight for AI deliverables to eliminate unverified AI output liability.")
             oversight_procs.append(RemediationProcedure(
                 title="Human-in-the-Loop (HITL) Output Verification Procedure",
@@ -197,7 +212,7 @@ Approval Signature: ______________________ Date: _________"""
 
         # Technical Architecture Role (Provider vs Deployer)
         role_lower = adoption.ai_role_architecture.lower()
-        if "custom" in role_lower or "api" in role_lower or "fine-tune" in role_lower:
+        if "custom" in role_lower or "api" in role_lower or "fine-tune" in role_lower or "rag" in role_lower:
             high_risk_flags.append(HighRiskFlag(
                 system_name="AI Integration / Product Architecture",
                 regulation_reference="EU AI Act Article 28 — Provider & Integrator Obligations",
@@ -211,7 +226,35 @@ Approval Signature: ______________________ Date: _________"""
             ))
             inc_recs.append("Establish technical logging and secure secrets management for custom LLM API integrations.")
 
-        if answers.past_incidents and "None" not in answers.past_incidents:
+        # Check Chatbot Article 50 Transparency Rule
+        hr_lower = [h.lower() for h in answers.hr_automated_uses]
+        if any("chatbot" in h or "messaging" in h or "obsługi klienta" in h for h in hr_lower):
+            high_risk_flags.append(HighRiskFlag(
+                system_name="Customer Chatbots / Automated Messaging",
+                regulation_reference="EU AI Act Article 50 — Transparency Obligations for Interactive AI",
+                severity="Medium",
+                description="AI systems interacting directly with natural persons (chatbots) must inform users clearly that they are interacting with an AI system.",
+                required_actions=[
+                    "Add explicit disclosure notice: 'You are interacting with an AI assistant.'",
+                    "Provide clear opt-out path to transfer users to a human support agent."
+                ]
+            ))
+
+        # Check Annex III High Risk Categories
+        if any(k in h for h in hr_lower for k in ["recruitment", "cv", "candidate", "evaluation", "credit", "rekrutacja", "scoring"]):
+            high_risk_flags.append(HighRiskFlag(
+                system_name="HR / Automated Employment & Scoring System",
+                regulation_reference="EU AI Act Annex III — High-Risk AI Category (Employment & Credit)",
+                severity="Critical",
+                description="Using AI for candidate selection, CV screening, or employee performance evaluation falls directly under Annex III High-Risk classification.",
+                required_actions=[
+                    "Conduct Fundamental Rights Impact Assessment (FRIA).",
+                    "Establish human oversight and bias mitigation logging.",
+                    "Register system with competent EU national authority upon enforcement."
+                ]
+            ))
+
+        if answers.past_incidents and "None" not in answers.past_incidents and "Brak" not in answers.past_incidents:
             inc_score = max(10.0, 100.0 - len(answers.past_incidents) * 30.0)
 
         inc_status = "Good" if inc_score >= 70 else ("Attention" if inc_score >= 40 else "Critical")
@@ -247,13 +290,16 @@ Approval Signature: ______________________ Date: _________"""
 "Provider may utilize AI tools (including code assistants) to support deliverables. All deliverables undergo human verification. Provider assigns all IP rights to Client." """
                 ))
 
+        if "public" in answers.public_ai_content.lower() or "tak" in answers.public_ai_content.lower():
+            ip_recs.append("Verify copyright clearance and training data compliance for publicly published AI content (EU AI Act Art. 53).")
+
         ip_status = "Good" if ip_score >= 70 else ("Attention" if ip_score >= 40 else "Critical")
         domain_results["Intellectual Property"] = DomainResult(
             name="Intellectual Property",
             weight=0.10,
             score=ip_score,
             status=ip_status,
-            finding=f"Commercial AI content: {'Yes' if answers.sells_ai_content else 'No'}. Contract disclosure: {answers.discloses_ai_in_contracts}.",
+            finding=f"Selling AI deliverables: {'Yes' if answers.sells_ai_content else 'No'}. Disclosed in contracts: {answers.discloses_ai_in_contracts}. Public Deployment: {answers.public_ai_content}.",
             recommendations=ip_recs,
             procedures=ip_procs
         )
@@ -261,92 +307,73 @@ Approval Signature: ______________________ Date: _________"""
         # --- 6. HR & High-Risk Systems (Weight: 10%) ---
         hr_score = 100.0
         hr_recs = []
-        hr_procs = []
-        hr_uses = [u for u in answers.hr_automated_uses if u.strip().lower() not in ["none", "brak"]]
+        if any(h for h in answers.hr_automated_uses if h not in ["None", "Żadne z powyższych"]):
+            hr_score = 30.0
+            hr_recs.append("Perform EU AI Act Annex III High-Risk compliance audit for HR/Automated decision tools.")
 
-        if hr_uses:
-            hr_score = 10.0
-            for use in hr_uses:
-                if "chatbot" in use.lower() or "customer support" in use.lower():
-                    high_risk_flags.append(HighRiskFlag(
-                        system_name="AI Customer Support Chatbot",
-                        regulation_reference="EU AI Act Article 50 — Transparency Obligation for AI Systems",
-                        severity="High",
-                        description="Using AI for automated customer interaction requires clear disclosure informing users that they are interacting with an AI system.",
-                        required_actions=["Implement clear AI chatbot transparency notice."]
-                    ))
-                else:
-                    high_risk_flags.append(HighRiskFlag(
-                        system_name=f"AI in {use}",
-                        regulation_reference="EU AI Act — Annex III (High-Risk AI Systems)",
-                        severity="Critical",
-                        description=f"Using AI for '{use}' triggers High-Risk classification under Annex III. Requires risk management, bias testing, and human override.",
-                        required_actions=["Perform bias testing.", "Provide candidate disclosure notice."]
-                    ))
-
-            hr_recs.append(f"Conduct formal EU AI Act High-Risk assessment for automated systems in: {', '.join(hr_uses)}.")
-            hr_procs.append(RemediationProcedure(
-                title="EU AI Act High-Risk Governance Framework (HR & Customer Chatbots)",
-                timeline="Days 31–90",
-                priority="URGENT",
-                objective="Achieve full compliance with EU AI Act obligations for HR tools and automated chatbots.",
-                steps=[
-                    "Establish Risk Management System (Article 9) for HR screening tools.",
-                    "Perform bias testing to prevent discriminatory filtering.",
-                    "Implement candidate and chatbot transparency disclosures (Article 50)."
-                ],
-                starter_template="""CANDIDATE DISCLOSURE NOTICE (EU AI ACT ART. 50):
-"Please note that Acme Software utilizes AI-assisted screening tools. All final hiring decisions are made exclusively by human recruiters. You have the right to request human review of your application." """
-            ))
-
-        hr_status = "Good" if hr_score >= 70 else "Critical"
+        hr_status = "Good" if hr_score >= 70 else ("Attention" if hr_score >= 40 else "Critical")
         domain_results["HR & High-Risk Systems"] = DomainResult(
             name="HR & High-Risk Systems",
             weight=0.10,
             score=hr_score,
             status=hr_status,
-            finding=f"Automated use cases: {', '.join(hr_uses) if hr_uses else 'None'}.",
+            finding=f"Automated HR/AI uses: {', '.join(answers.hr_automated_uses) if answers.hr_automated_uses else 'None'}.",
             recommendations=hr_recs,
-            procedures=hr_procs
+            procedures=[]
         )
 
         # --- 7. AI Literacy & Operations (Weight: 10%) ---
-        tools = adoption.tools
-        ops_score = min(100.0, 60.0 + (20.0 if len(tools) >= 3 else 0.0) + (20.0 if answers.ai_training_status != "No" else 0.0))
+        ops_score = 50.0
+        if answers.ai_training_status in ["Regularly", "Regularly (Ongoing formal security & prompt governance training)"]:
+            ops_score += 50.0
+        elif answers.ai_training_status in ["Occasionally", "Occasionally (One-off workshops)"]:
+            ops_score += 25.0
+
+        ops_status = "Good" if ops_score >= 70 else ("Attention" if ops_score >= 40 else "Critical")
         domain_results["AI Literacy & Operations"] = DomainResult(
             name="AI Literacy & Operations",
             weight=0.10,
             score=ops_score,
-            status="Good" if ops_score >= 70 else "Attention",
-            finding=f"Active tools: {', '.join(tools)}. User tier: {adoption.active_users}.",
-            recommendations=[]
+            status=ops_status,
+            finding=f"Active users: {adoption.active_users}. Training: {answers.ai_training_status}.",
+            recommendations=[],
+            procedures=[]
         )
 
-        # Aggregate procedures
-        for dom in domain_results.values():
-            all_procedures.extend(dom.procedures)
-
         # Overall Score Calculation
-        total_score = round(sum(res.score * res.weight for res in domain_results.values()), 1)
+        overall = sum(res.score * res.weight for res in domain_results.values())
+        overall = round(max(0.0, min(100.0, overall)), 1)
 
-        maturity = "Trusted" if total_score >= 91 else ("Advanced" if total_score >= 71 else ("Managed" if total_score >= 51 else ("Developing" if total_score >= 31 else "Initial")))
-        risk_level = "Low Risk" if total_score >= 76 else ("Moderate Risk" if total_score >= 56 else ("High Risk" if total_score >= 36 else "Critical Risk"))
+        # Maturity Level
+        if overall >= 85:
+            maturity = "Trusted / Advanced"
+            risk = "Low Risk"
+        elif overall >= 65:
+            maturity = "Defined / Operational"
+            risk = "Moderate Risk"
+        elif overall >= 40:
+            maturity = "Ad-Hoc / Developing"
+            risk = "High Risk"
+        else:
+            maturity = "Initial / Uncontrolled"
+            risk = "Critical Risk"
 
+        # Collect top recommendations
         top_recs = []
-        for dom_name, dom_res in domain_results.items():
-            for rec in dom_res.recommendations:
-                top_recs.append({
-                    "domain": dom_name,
-                    "priority": "Critical" if dom_res.status == "Critical" else ("High" if dom_res.status == "Attention" else "Medium"),
-                    "action": rec
-                })
+        for d in domain_results.values():
+            for r in d.recommendations:
+                top_recs.append({"domain": d.name, "recommendation": r})
+
+        # Collect all remediation procedures
+        for d in domain_results.values():
+            all_procedures.extend(d.procedures)
 
         return ScoringReport(
-            overall_score=total_score,
+            overall_score=overall,
             maturity_level=maturity,
-            risk_level=risk_level,
+            risk_level=risk,
             domain_results=domain_results,
             high_risk_flags=high_risk_flags,
-            top_recommendations=top_recs,
+            top_recommendations=top_recs[:5],
             remediation_procedures=all_procedures
         )

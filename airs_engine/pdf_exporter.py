@@ -1,10 +1,11 @@
 """
-AIRS Report Exporter Module (Visual Charts Version)
+AIRS Report Exporter Module (Visual Charts & Multilingual Version)
 Renders and exports comprehensive HTML reports with SVG charts, remediation procedures,
-timelines, and ready-to-use policy templates.
+timelines, ready-to-use policy templates, and interactive EN/PL language switching.
 """
 
 import os
+import json
 from typing import Dict, Any
 from .mapper import AIRSAssessmentObject
 from .scoring import ScoringReport
@@ -77,7 +78,7 @@ class ReportExporter:
         alert_html = f"""
   <div class="alert-box">
     <strong style="color: #F87171;">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
-    {report_content['high_risk_commentary']}
+    <span id="alert-text">{report_content['high_risk_commentary']}</span>
   </div>
         """ if len(scoring.high_risk_flags) > 0 else ""
 
@@ -96,6 +97,10 @@ class ReportExporter:
             "{{ company_size }}": str(assessment.company.company_size),
             "{{ ai_tools_list }}": ", ".join(assessment.ai_adoption.tools),
             "{{ executive_summary }}": report_content["executive_summary"],
+            "{{ exec_summary_en_json }}": json.dumps(report_content["exec_summary_en"]),
+            "{{ exec_summary_pl_json }}": json.dumps(report_content["exec_summary_pl"]),
+            "{{ alert_en_json }}": json.dumps(report_content.get("high_risk_commentary_en", "")),
+            "{{ alert_pl_json }}": json.dumps(report_content.get("high_risk_commentary_pl", "")),
             "{{ radar_svg }}": report_content["radar_svg"],
             "{{ gauge_svg }}": report_content["gauge_svg"],
             "{{ disclaimer }}": report_content["disclaimer"]
@@ -113,61 +118,22 @@ class ReportExporter:
         <td><strong>{{ dom.name }}</strong></td>
         <td>{{ (dom.weight * 100)|int }}%</td>
         <td><strong>{{ dom.score }}</strong> / 100</td>
-        <td>
-          <span style="font-weight: 700; color: {% if dom.status == 'Good' %}#34D399{% elif dom.status == 'Attention' %}#FBBF24{% else %}#F87171{% endif %};">
-            {{ dom.status }}
-          </span>
-        </td>
+        <td><span style="font-weight: 700; color: {{ dom.status_color }};">{{ dom.status }}</span></td>
         <td style="color: var(--text-muted); font-size: 13px;">{{ dom.finding }}</td>
       </tr>
       {% endfor %}"""
+
         html = html.replace(table_marker, domain_rows_html)
 
-        # Replace Procedures Loop
-        proc_marker = """  {% for proc in remediation_procedures %}
-  <div class="procedure-card">
-    <div class="procedure-header">
-      <div class="procedure-title">{{ loop.index }}. {{ proc.title }}</div>
-      <div>
-        <span class="{% if proc.priority == 'URGENT' %}pill-urgent{% else %}pill-high{% endif %}">{{ proc.priority }}</span>
-        <span style="font-size: 11px; margin-left: 6px; color: #38BDF8; font-weight: 700;">{{ proc.timeline }}</span>
-      </div>
-    </div>
-    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;"><strong>Objective:</strong> {{ proc.objective }}</p>
-    <strong style="font-size: 13px; color: #CBD5E1;">Implementation Steps:</strong>
-    <ol class="step-list">
-      {% for step in proc.steps %}
-      <li>{{ step }}</li>
-      {% endfor %}
-    </ol>
-  </div>
-  {% endfor %}"""
-        html = html.replace(proc_marker, procedures_html)
+        # Replace Procedures, Timelines, Templates
+        html = html.replace("{{ procedures_html }}", procedures_html)
+        html = html.replace("{{ phase_7_html }}", phase_7_html)
+        html = html.replace("{{ phase_30_html }}", phase_30_html)
+        html = html.replace("{{ phase_90_html }}", phase_90_html)
+        html = html.replace("{{ templates_html }}", templates_html)
 
-        # Replace Timeline Columns
-        html = html.replace("""      {% for item in phase_7_days %}
-      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
-      {% endfor %}""", phase_7_html if phase_7_html else '<div style="font-size: 12px; color: #94A3B8;">No immediate actions required.</div>')
-
-        html = html.replace("""      {% for item in phase_30_days %}
-      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
-      {% endfor %}""", phase_30_html if phase_30_html else '<div style="font-size: 12px; color: #94A3B8;">No 30-day actions required.</div>')
-
-        html = html.replace("""      {% for item in phase_90_days %}
-      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>{{ item.title }}</strong></div>
-      {% endfor %}""", phase_90_html if phase_90_html else '<div style="font-size: 12px; color: #94A3B8;">No 90-day actions required.</div>')
-
-        # Replace Policy Templates
-        template_marker = """  {% for t in policy_templates %}
-  <div class="card">
-    <h4 style="font-size: 15px; color: #38BDF8; margin-bottom: 8px;">Template: {{ t.title }}</h4>
-    <div class="template-box">{{ t.template }}</div>
-  </div>
-  {% endfor %}"""
-        html = html.replace(template_marker, templates_html)
-
-        # Save HTML
-        os.makedirs(os.path.dirname(os.path.abspath(output_filepath)), exist_ok=True)
+        # Write output file
+        os.makedirs(os.path.dirname(output_filepath), exist_ok=True)
         with open(output_filepath, "w", encoding="utf-8") as f:
             f.write(html)
 

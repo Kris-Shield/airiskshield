@@ -33,6 +33,36 @@
       margin: 0 auto;
     }
 
+    .lang-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #1E293B;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .lang-btn {
+      background: #0F172A;
+      color: #94A3B8;
+      border: 1px solid #334155;
+      padding: 4px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: #38BDF8;
+      color: #0F172A;
+      border-color: #38BDF8;
+    }
+
     .header-banner {
       display: flex;
       justify-content: space-between;
@@ -59,13 +89,27 @@
       margin-top: 4px;
     }
 
-    .meta-badge {
+    .report-meta {
       text-align: right;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
     }
 
-    .score-hero-container {
+    .report-meta strong {
+      color: var(--text-light);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 36px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
@@ -73,289 +117,179 @@
     }
 
     .card {
-      background: var(--card-bg);
+      background-color: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
-    .score-card {
+    .score-hero {
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(145deg, #1E293B, #0F172A);
-      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 24px;
+      background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, rgba(15, 23, 42, 0.4) 100%);
     }
 
     .score-number {
-      font-size: 52px;
+      font-size: 56px;
       font-weight: 900;
       color: #38BDF8;
       line-height: 1;
-      margin: 8px 0 2px 0;
+      margin: 12px 0;
     }
 
-    .score-max {
-      font-size: 18px;
-      color: var(--text-muted);
-    }
-
-    .badge-status {
+    .badge {
       display: inline-block;
-      padding: 4px 14px;
+      padding: 4px 12px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 8px;
     }
 
-    .status-low { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
-    .status-moderate { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
-    .status-high { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
-    .status-critical { background: rgba(225, 29, 72, 0.3); color: #FB7185; border: 1px solid #E11D48; }
+    .badge-critical { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+    .badge-high { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+    .badge-moderate { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+    .badge-low { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
 
-    .company-details-list p {
-      font-size: 14px;
-      margin-bottom: 8px;
-      color: var(--text-muted);
-    }
-
-    .company-details-list strong {
-      color: var(--text-light);
-    }
-
-    .section-header {
-      font-size: 22px;
-      font-weight: 800;
-      margin: 36px 0 16px 0;
-      color: var(--text-light);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
-    }
-
-    .alert-box {
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid var(--danger);
-      padding: 18px 24px;
-      border-radius: 8px;
-      margin-bottom: 24px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-
-    .domain-table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--card-bg);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .domain-table th, .domain-table td {
-      padding: 14px 18px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
+      margin-top: 12px;
       font-size: 14px;
     }
 
-    .domain-table th {
-      background: rgba(15, 23, 42, 0.8);
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: rgba(15, 23, 42, 0.6);
       color: var(--text-muted);
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 0.5px;
     }
 
     .procedure-card {
-      background: var(--card-bg);
+      background: #0F172A;
       border: 1px solid var(--border-color);
-      border-radius: 14px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
+      border-left: 4px solid #38BDF8;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
     }
 
     .procedure-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .procedure-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
-      color: #38BDF8;
+      color: #F8FAFC;
     }
-
-    .pill-urgent { background: rgba(239, 68, 68, 0.2); color: #F87171; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
-    .pill-high { background: rgba(245, 158, 11, 0.2); color: #FBBF24; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 700; }
 
     .step-list {
       margin-left: 20px;
       margin-top: 8px;
+      color: #CBD5E1;
+      font-size: 13px;
     }
 
     .step-list li {
-      font-size: 14px;
-      margin-bottom: 6px;
-      color: #CBD5E1;
+      margin-bottom: 4px;
     }
 
     .template-box {
-      background: #090D16;
-      border: 1px dashed var(--accent-cyan);
+      background: #020617;
+      border: 1px dashed #475569;
+      border-radius: 6px;
+      padding: 14px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 12px;
+      color: #38BDF8;
+      white-space: pre-wrap;
+      margin-top: 10px;
+    }
+
+    .alert-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #EF4444;
       border-radius: 8px;
       padding: 16px;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 12px;
-      color: #A5F3FC;
-      margin-top: 12px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .timeline-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .timeline-col {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .timeline-title {
+      margin-bottom: 24px;
+      color: #FCA5A5;
       font-size: 14px;
-      font-weight: 800;
-      color: #38BDF8;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      letter-spacing: 0.5px;
     }
 
-    .disclaimer-footer {
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border-color);
-      font-size: 12px;
+    .pill-urgent { background: #E11D48; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .pill-high { background: #F59E0B; color: black; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+    .disclaimer {
+      font-size: 11px;
       color: var(--text-muted);
-      line-height: 1.5;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
+  <!-- Language Switcher Bar -->
+  <div class="lang-bar">
+    <span style="font-size: 12px; color: var(--text-muted);">🌐 Language / Język:</span>
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-pl" onclick="setLang('pl')">PL</button>
+  </div>
+
   <div class="header-banner">
     <div>
       <div class="brand-title">AI RISK SHIELD</div>
-      <div class="brand-subtitle">Responsible AI Governance & Visual Audit</div>
+      <div class="brand-subtitle">Responsible AI Governance Assessment & Audit Report</div>
     </div>
-    <div class="meta-badge">
+    <div class="report-meta">
       <div>Report ID: <strong>resp_89234712</strong></div>
       <div>Date: <strong>2026-08-06</strong></div>
-    </div>
-  </div>
-
-  <!-- Hero Score & Profile -->
-  <div class="score-hero-container">
-    <div class="card score-card">
-      <div class="brand-subtitle">AIRS GOVERNANCE INDEX</div>
-      <div class="score-number">18.8 <span class="score-max">/ 100</span></div>
-      <div class="badge-status status-critical-risk">Critical Risk</div>
-      <div style="font-size: 12px; color: var(--text-muted); margin-top: 6px; margin-bottom: 10px;">Maturity Level: <strong>Initial / Uncontrolled</strong></div>
-      
-      <!-- Vector Gauge Bar -->
-      <svg width="100%" height="50" viewBox="0 0 500 50" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#E11D48" />
-      <stop offset="30%" stop-color="#F59E0B" />
-      <stop offset="55%" stop-color="#3B82F6" />
-      <stop offset="80%" stop-color="#10B981" />
-      <stop offset="100%" stop-color="#06B6D4" />
-    </linearGradient>
-  </defs>
-
-  <!-- Track Background -->
-  <rect x="0" y="15" width="500" height="14" rx="7" fill="url(#gaugeGrad)" opacity="0.85" />
-  
-  <!-- Tiers Dividers -->
-  <line x1="150.0" y1="15" x2="150.0" y2="29" stroke="#0F172A" stroke-width="2" />
-  <line x1="250.0" y1="15" x2="250.0" y2="29" stroke="#0F172A" stroke-width="2" />
-  <line x1="350.0" y1="15" x2="350.0" y2="29" stroke="#0F172A" stroke-width="2" />
-  <line x1="450.0" y1="15" x2="450.0" y2="29" stroke="#0F172A" stroke-width="2" />
-
-  <!-- Tier Labels -->
-  <text x="75.0" y="42" text-anchor="middle" fill="#94A3B8" font-size="10">Initial</text>
-  <text x="200.0" y="42" text-anchor="middle" fill="#94A3B8" font-size="10">Developing</text>
-  <text x="300.0" y="42" text-anchor="middle" fill="#94A3B8" font-size="10">Managed</text>
-  <text x="400.0" y="42" text-anchor="middle" fill="#94A3B8" font-size="10">Advanced</text>
-  <text x="475.0" y="42" text-anchor="middle" fill="#94A3B8" font-size="10">Trusted</text>
-
-  <!-- Pointer Pin -->
-  <polygon points="88.0,2 100.0,2 94.0,12" fill="#38BDF8" />
-  <circle cx="94.0" cy="22" r="6" fill="#38BDF8" stroke="#0F172A" stroke-width="2" />
-</svg>
-    </div>
-
-    <div class="card">
-      <h3 style="font-size: 16px; margin-bottom: 12px; color: #38BDF8;">Company Profile</h3>
-      <div class="company-details-list">
-        <p>Organization: <strong>Acme Software Solutions Ltd.</strong></p>
-        <p>Email: <strong>airiskshield@gmail.com</strong></p>
-        <p>Industry / Country: <strong>Software Development & IT (Poland)</strong></p>
-        <p>Company Size: <strong>10-49 employees</strong></p>
-        <p>AI Tools Active: <strong>ChatGPT, Claude, GitHub Copilot, Canva AI</strong></p>
-      </div>
+      <div>Framework: <strong>EU AI Act, GDPR, ISO 42001</strong></div>
     </div>
   </div>
 
   <!-- Executive Summary -->
   <div class="card">
-    <h3 style="font-size: 18px; margin-bottom: 12px; color: #38BDF8;">Executive Summary</h3>
-    <p style="font-size: 14px; color: #CBD5E1;">Raport audytowy AI Risk Shield ocenia poziom dojrzałości zarządzania sztuczną inteligencją w firmie **Acme Software Solutions Ltd.** (Software Development & IT, 10-49 employees). Na podstawie metodyki AIRS organizacja uzyskała łączny wynik **18.8/100**, co klasyfikuje ją na poziomie dojrzałości **'Initial / Uncontrolled'** oraz w kategorii ryzyka **'Critical Risk'**.
+    <h3 style="font-size: 16px; color: #38BDF8; margin-bottom: 10px;" id="exec-heading">Executive Summary</h3>
+    <div style="font-size: 14px; color: #CBD5E1; line-height: 1.7;" id="exec-text">
+      The AI Risk Shield Audit assesses the AI governance maturity of **Acme Software Solutions Ltd.** (Software Development & IT, 10-49 employees). Based on the AIRS framework, the organization achieved an overall score of **18.8/100**, classifying its maturity as **'Initial / Uncontrolled'** and risk level as **'Critical Risk'**.
 
-Zidentyfikowano kluczowe obszary podatności operacyjnej przy korzystaniu z narzędzi ChatGPT, Claude, GitHub Copilot, Canva AI. Zaobserwowano ryzyko nieautoryzowanego przesyłania danych poufnych do publicznych modeli AI. Szczególną uwagę należy zwrócić na wykryte systemy wysokiego ryzyka EU AI Act: AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System. Rekomendowane jest natychmiastowe wdrożenie 7-dniowego planu naprawczego obejmującego Politykę AI, procedury HITL oraz anonimizację promptów.</p>
+Key operational vulnerability areas were identified across active AI tools (ChatGPT, Claude, GitHub Copilot, Canva AI). Unmonitored uploading of confidential data into public AI tools was reported. Particular scrutiny is required for the identified EU AI Act High-Risk systems: AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System. Immediate implementation of the 7-Day Remediation Plan is recommended, covering AI Usage Policy, Human-in-the-Loop oversight, and prompt anonymization.
+    </div>
   </div>
 
-  <!-- EU AI Act Regulatory Alert -->
-  
+  {% if has_high_risk_flags %}
   <div class="alert-box">
-    <strong style="color: #F87171;">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
-    ⚠️ **EU AI Act Regulatory High-Risk Notice:** Your organization reported using AI for automated evaluation (AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System). Under Annex III / Article 28 / Article 50 of the EU AI Act, these use cases trigger legal obligations including mandatory risk management, technical documentation, logging, transparency notices, and human oversight.
+    <strong style="color: #F87171;" id="alert-heading">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
+    <span id="alert-text">{{ high_risk_commentary }}</span>
   </div>
-        
+  {% endif %}
 
-  <!-- Domain Breakdown with Radar Chart -->
-  <div class="section-header">
-    📊 Section 1 — Visual Governance & Radar Evaluation
-  </div>
-
-  <div class="charts-grid">
-    <div class="card" style="text-align: center; margin-bottom: 0;">
-      <h4 style="font-size: 14px; color: #38BDF8; margin-bottom: 12px;">AIRS 7-Domain Maturity Radar</h4>
+  <!-- Section 1: Score & Radar Chart -->
+  <div class="section-title">📊 Section 1 — Visual Governance & Radar Evaluation</div>
+  <div class="grid-2">
+    <div class="card score-hero">
+      <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">AIRS GOVERNANCE INDEX</div>
+      <div class="score-number">18.8</div>
+      <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Maturity Level: <strong>Initial / Uncontrolled</strong></div>
+      <div class="badge badge-critical-risk">Critical Risk</div>
+    </div>
+    <div class="card" style="display: flex; justify-content: center; align-items: center; padding: 12px;">
       <svg width="400" height="340" viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg">
   <polygon points="200.0,138.0 217.2,146.3 221.4,164.9 209.5,179.8 190.5,179.8 178.6,164.9 182.8,146.3" fill="none" stroke="#334155" stroke-width="1" stroke-dasharray="3,3" />
 <polygon points="200.0,116.0 234.4,132.6 242.9,169.8 219.1,199.6 180.9,199.6 157.1,169.8 165.6,132.6" fill="none" stroke="#334155" stroke-width="1" stroke-dasharray="3,3" />
@@ -395,93 +329,30 @@ Zidentyfikowano kluczowe obszary podatności operacyjnej przy korzystaniu z narz
   <text x="10" y="330" fill="#06B6D4" font-size="10" font-weight="700">━ Acme Score</text>
 </svg>
     </div>
-
-    <div style="display: flex; flex-direction: column; justify-content: center;">
-      <h4 style="font-size: 15px; color: #F8FAFC; margin-bottom: 12px;">Visual Maturity Gap Analysis</h4>
-      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
-        The spider chart visualizes your organization's score across all 7 AIRS domains against a benchmark target zone (80+). 
-        The area gap highlights critical vulnerability points—particularly in <strong>AI Governance</strong>, <strong>Data Protection</strong>, and <strong>High-Risk AI Compliance</strong>.
-      </p>
-    </div>
   </div>
 
-  <table class="domain-table" style="margin-bottom: 32px;">
-    <thead>
-      <tr>
-        <th>Domain</th>
-        <th>Weight</th>
-        <th>Score</th>
-        <th>Status</th>
-        <th>Key Finding</th>
-      </tr>
-    </thead>
-    <tbody>
-
-      <tr>
-        <td><strong>AI Governance</strong></td>
-        <td>20%</td>
-        <td><strong>0.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #F87171;">Critical</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Policy: No. Training: No. Shadow AI control: Informal policy guidance (Trust-based, no technical blocks).</td>
-      </tr>
-            
-      <tr>
-        <td><strong>Data Protection & Privacy</strong></td>
-        <td>25%</td>
-        <td><strong>0.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #F87171;">Critical</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Licensing: Mostly personal free accounts. Hosting: US Cloud Data Centers. Uploads: Yes.</td>
-      </tr>
-            
-      <tr>
-        <td><strong>Human Oversight</strong></td>
-        <td>15%</td>
-        <td><strong>35.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #F87171;">Critical</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Output review frequency: Sometimes.</td>
-      </tr>
-            
-      <tr>
-        <td><strong>Transparency & Incidents</strong></td>
-        <td>10%</td>
-        <td><strong>40.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #FBBF24;">Attention</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Architecture: Yes, we build custom AI features / RAG / API integrations into our products. Incidents: AI Hallucination, Customer Complaint.</td>
-      </tr>
-            
-      <tr>
-        <td><strong>Intellectual Property</strong></td>
-        <td>10%</td>
-        <td><strong>15.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #F87171;">Critical</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Selling AI deliverables: Yes. Disclosed in contracts: No. Public Deployment: Yes, publicly deployed in marketing materials or software applications.</td>
-      </tr>
-            
-      <tr>
-        <td><strong>HR & High-Risk Systems</strong></td>
-        <td>10%</td>
-        <td><strong>30.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #F87171;">Critical</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Automated HR/AI uses: Recruitment, CV Screening, Customer Support Chatbots.</td>
-      </tr>
-            
-      <tr>
-        <td><strong>AI Literacy & Operations</strong></td>
-        <td>10%</td>
-        <td><strong>50.0</strong> / 100</td>
-        <td><span style="font-weight: 700; color: #FBBF24;">Attention</span></td>
-        <td style="color: var(--text-muted); font-size: 13px;">Active users: 6-20. Training: No.</td>
-      </tr>
-            
-    </tbody>
-  </table>
-
-  <!-- Detailed Remediation Procedures -->
-  <div class="section-header">
-    📋 Section 2 — Detailed Remediation Procedures
+  <!-- Domain Breakdown Table -->
+  <div class="card">
+    <h3 style="font-size: 16px; color: #F8FAFC; margin-bottom: 12px;">AIRS 7-Domain Governance Evaluation</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Weight</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th>Finding / Audit Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ domain_rows }}
+      </tbody>
+    </table>
   </div>
 
-
+  <!-- Section 2: Detailed Remediation Procedures -->
+  <div class="section-title">📋 Section 2 — Actionable Remediation Procedures</div>
+  
   <div class="procedure-card">
     <div class="procedure-header">
       <div class="procedure-title">1. Establish Corporate AI Usage Policy</div>
@@ -543,37 +414,26 @@ Zidentyfikowano kluczowe obszary podatności operacyjnej przy korzystaniu z narz
   </div>
             
 
-  <!-- Implementation Timelines -->
-  <div class="section-header">
-    ⏱️ Section 3 — Implementation Roadmap & Phased Timeline
-  </div>
-
-  <div class="timeline-container">
-    <div class="timeline-col">
-      <div class="timeline-title">Phase 1: Days 1–7</div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Immediate Risk Containment</p>
-<div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Establish Corporate AI Usage Policy</strong></div><div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Data Loss Prevention (DLP) & Anonymization Protocol</strong></div><div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Human-in-the-Loop (HITL) Output Verification Procedure</strong></div>
+  <!-- Section 3: Phased Timelines -->
+  <div class="section-title">⏱️ Section 3 — Phased Remediation Roadmap</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+    <div class="card">
+      <h4 style="color: #EF4444; font-size: 14px; margin-bottom: 10px;">Phase 1: Days 1–7 (Urgent)</h4>
+      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Establish Corporate AI Usage Policy</strong></div><div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Data Loss Prevention (DLP) & Anonymization Protocol</strong></div><div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Human-in-the-Loop (HITL) Output Verification Procedure</strong></div>
     </div>
-
-    <div class="timeline-col">
-      <div class="timeline-title">Phase 2: Days 8–30</div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Policy & Contract Rollout</p>
-<div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Client Contract AI Disclosure & IP Clause Integration</strong></div>
+    <div class="card">
+      <h4 style="color: #F59E0B; font-size: 14px; margin-bottom: 10px;">Phase 2: Days 8–30 (High)</h4>
+      <div style="font-size: 13px; margin-bottom: 8px; color: #F8FAFC;">• <strong>Client Contract AI Disclosure & IP Clause Integration</strong></div>
     </div>
-
-    <div class="timeline-col">
-      <div class="timeline-title">Phase 3: Days 31–90</div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">High-Risk AI Compliance</p>
-<div style="font-size: 12px; color: #94A3B8;">No 90-day actions required.</div>
+    <div class="card">
+      <h4 style="color: #38BDF8; font-size: 14px; margin-bottom: 10px;">Phase 3: Days 31–90 (Medium)</h4>
+      
     </div>
   </div>
 
-  <!-- Policy Templates Appendix -->
-  <div class="section-header">
-    📜 Appendix — Ready-to-Use Policy & Checklist Templates
-  </div>
-
-
+  <!-- Section 4: Policy & Contract Templates -->
+  <div class="section-title">📑 Section 4 — Ready-to-Use Policy & Contract Templates</div>
+  
   <div class="card">
     <h4 style="font-size: 15px; color: #38BDF8; margin-bottom: 8px;">Template: Establish Corporate AI Usage Policy</h4>
     <div class="template-box">POLICY SNIPPET — CORPORATE AI USAGE POLICY v1.0
@@ -605,19 +465,37 @@ Approval Signature: ______________________ Date: _________</div>
   </div>
             
 
-  <!-- Consultation Banner -->
-  <div class="card" style="background: linear-gradient(135deg, #1E293B, #172554); border: 1px solid #3B82F6; margin-top: 32px;">
-    <h3 style="font-size: 16px; color: #60A5FA; margin-bottom: 6px;">💬 Human Review & Advisory Next Steps</h3>
-    <p style="font-size: 13px; color: #CBD5E1;">
-      This expanded assessment and remediation report has been generated for expert human verification. A complimentary 30-minute consultation 
-      with an AI Risk Shield governance advisor is available to customize these templates and guide your 90-day compliance roadmap.
-    </p>
+  <div class="disclaimer">
+    <strong>LEGAL DISCLAIMER:</strong> This document is an automated decision-support assessment generated by the AIRS engine. It does not constitute formal legal advice.
   </div>
 
-  <!-- Disclaimer -->
-  <div class="disclaimer-footer">
-    <strong>DISCLAIMER & LIMITATIONS:</strong> DISCLAIMER: AI Risk Shield is an executive decision-support framework designed to assist organizations in identifying AI risks and establishing responsible AI governance practices. This report does not constitute binding legal representation.
-  </div>
+  <script>
+    const execEN = "The AI Risk Shield Audit assesses the AI governance maturity of **Acme Software Solutions Ltd.** (Software Development & IT, 10-49 employees). Based on the AIRS framework, the organization achieved an overall score of **18.8/100**, classifying its maturity as **'Initial / Uncontrolled'** and risk level as **'Critical Risk'**.\n\nKey operational vulnerability areas were identified across active AI tools (ChatGPT, Claude, GitHub Copilot, Canva AI). Unmonitored uploading of confidential data into public AI tools was reported. Particular scrutiny is required for the identified EU AI Act High-Risk systems: AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System. Immediate implementation of the 7-Day Remediation Plan is recommended, covering AI Usage Policy, Human-in-the-Loop oversight, and prompt anonymization.";
+    const execPL = "Raport audytowy AI Risk Shield ocenia poziom dojrza\u0142o\u015bci zarz\u0105dzania sztuczn\u0105 inteligencj\u0105 w firmie **Acme Software Solutions Ltd.** (Software Development & IT, 10-49 employees). Na podstawie metodyki AIRS organizacja uzyska\u0142a \u0142\u0105czny wynik **18.8/100**, co klasyfikuje j\u0105 na poziomie dojrza\u0142o\u015bci **'Initial / Uncontrolled'** oraz w kategorii ryzyka **'Critical Risk'**.\n\nZidentyfikowano kluczowe obszary podatno\u015bci operacyjnej przy korzystaniu z narz\u0119dzi ChatGPT, Claude, GitHub Copilot, Canva AI. Zaobserwowano ryzyko nieautoryzowanego przesy\u0142ania danych poufnych do publicznych modeli AI. Szczeg\u00f3ln\u0105 uwag\u0119 nale\u017cy zwr\u00f3ci\u0107 na wykryte systemy wysokiego ryzyka EU AI Act: AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System. Rekomendowane jest natychmiastowe wdro\u017cenie 7-dniowego planu naprawczego obejmuj\u0105cego Polityk\u0119 AI, procedury HITL oraz anonimizacj\u0119 prompt\u00f3w.";
+    const alertEN = "\u26a0\ufe0f **EU AI Act Regulatory High-Risk Notice:** Your organization reported using AI for automated evaluation (AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System). Under Annex III / Article 28 / Article 50 of the EU AI Act, these use cases trigger legal obligations including mandatory risk management, technical documentation, logging, transparency notices, and human oversight.";
+    const alertPL = "\u26a0\ufe0f **Ostrze\u017cenie Regulacyjne EU AI Act (Wysokie Ryzyko):** Twoja organizacja zg\u0142osi\u0142a wykorzystanie AI do automatycznej oceny (AI Integration / Product Architecture, Customer Chatbots / Automated Messaging, HR / Automated Employment & Scoring System). Zgodnie z Za\u0142\u0105cznikiem III / Art. 28 / Art. 50 EU AI Act, te zastosowania nak\u0142adaj\u0105 obowi\u0105zki prawne obejmuj\u0105ce zarz\u0105dzenie ryzykiem, dokumentacj\u0119 techniczn\u0105, logowanie zdarze\u0144, klauzul\u0119 przejrzysto\u015bci i nadz\u00f3r ludzki.";
 
+    function setLang(lang) {
+      const btnEN = document.getElementById('btn-en');
+      const btnPL = document.getElementById('btn-pl');
+      const execText = document.getElementById('exec-text');
+      const execHeading = document.getElementById('exec-heading');
+      const alertText = document.getElementById('alert-text');
+
+      if (lang === 'pl') {
+        btnEN.classList.remove('active');
+        btnPL.classList.add('active');
+        if (execText && execPL) execText.innerText = execPL;
+        if (execHeading) execHeading.innerText = 'Podsumowanie Zarządcze';
+        if (alertText && alertPL) alertText.innerText = alertPL;
+      } else {
+        btnPL.classList.remove('active');
+        btnEN.classList.add('active');
+        if (execText && execEN) execText.innerText = execEN;
+        if (execHeading) execHeading.innerText = 'Executive Summary';
+        if (alertText && alertEN) alertText.innerText = alertEN;
+      }
+    }
+  </script>
 </body>
 </html>

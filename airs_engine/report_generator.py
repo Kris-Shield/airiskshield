@@ -1,7 +1,7 @@
 """
 AIRS Report Generator Module (Bilingual Multilingual Version)
 Aggregates assessment scoring objects into structured report data dicts,
-utilizing LLMSynthesizer for executive summary generation in both English and Polish.
+utilizing LLMSynthesizer for executive summary generation in preferred client language.
 """
 
 from typing import Dict, Any, List
@@ -17,7 +17,9 @@ class AIReportGenerator:
         answers = assessment.answers
         adoption = assessment.ai_adoption
 
-        # Generate English (default) and Polish Narratives
+        pref_lang = getattr(company, "preferred_language", "en")
+
+        # Generate English and Preferred Language Narratives
         exec_summary_en = LLMSynthesizer.generate_narrative(
             company_name=company.name,
             industry=company.industry,
@@ -43,6 +45,9 @@ class AIReportGenerator:
             data_upload=answers.confidential_data_upload,
             lang="pl"
         )
+
+        # Default narrative selection based on client preference
+        default_summary = exec_summary_pl if pref_lang == "pl" else exec_summary_en
 
         # Generate Vector SVG Charts
         radar_svg = SVGChartGenerator.generate_radar_chart(scoring.domain_results, width=400, height=340)
@@ -86,16 +91,17 @@ class AIReportGenerator:
             "country": company.country,
             "industry": company.industry,
             "company_size": company.company_size,
+            "preferred_language": pref_lang,
             "tools": adoption.tools,
             "overall_score": scoring.overall_score,
             "risk_level": scoring.risk_level,
             "maturity_level": scoring.maturity_level,
             "exec_summary_en": exec_summary_en,
             "exec_summary_pl": exec_summary_pl,
-            "executive_summary": exec_summary_en, # Default EN
+            "executive_summary": default_summary,
             "high_risk_commentary_en": hr_commentary_en,
             "high_risk_commentary_pl": hr_commentary_pl,
-            "high_risk_commentary": hr_commentary_en,
+            "high_risk_commentary": hr_commentary_pl if pref_lang == "pl" else hr_commentary_en,
             "radar_svg": radar_svg,
             "gauge_svg": gauge_svg,
             "phase_7_days": phase_7,

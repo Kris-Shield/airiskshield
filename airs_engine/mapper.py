@@ -1,7 +1,7 @@
 """
-AIRS Data Mapper Module (Robust Live Tally Webhook Parser)
+AIRS Data Mapper Module (Multilingual Enterprise Version)
 Converts raw Tally webhook submissions into standardized AIRS assessment objects.
-Supports live Tally option ID resolution, fuzzy label matching, and multi-language form fields.
+Supports live Tally option ID resolution, fuzzy label matching, preferred report language, and multi-language form fields.
 """
 
 import re
@@ -15,6 +15,7 @@ class CompanyProfile:
     country: str = "Poland"
     industry: str = "General"
     company_size: str = "1-9 employees"
+    preferred_language: str = "en" # en, de, fr, nl, pl, es, it
 
 @dataclass
 class AIAdoptionProfile:
@@ -148,12 +149,32 @@ class TallyDataMapper:
             "Company Size", "company_size", "wielkość firmy", "liczba pracowników"
         ], "10-49 employees")
 
+        # 6. Preferred Language
+        pref_lang_raw = str(get_val([
+            "Preferred Report Language", "preferred_language", "język raportu", "language"
+        ], "English")).lower()
+
+        lang_code = "en"
+        if "pol" in pref_lang_raw or "pl" in pref_lang_raw:
+            lang_code = "pl"
+        elif "ger" in pref_lang_raw or "deu" in pref_lang_raw or "de" in pref_lang_raw:
+            lang_code = "de"
+        elif "fre" in pref_lang_raw or "fra" in pref_lang_raw or "fr" in pref_lang_raw:
+            lang_code = "fr"
+        elif "dut" in pref_lang_raw or "nld" in pref_lang_raw or "nl" in pref_lang_raw:
+            lang_code = "nl"
+        elif "spa" in pref_lang_raw or "esp" in pref_lang_raw or "es" in pref_lang_raw:
+            lang_code = "es"
+        elif "ita" in pref_lang_raw or "it" in pref_lang_raw:
+            lang_code = "it"
+
         company = CompanyProfile(
             name=str(company_name_val).strip(),
             email=str(corporate_email_val).strip(),
             country=str(country_val).strip(),
             industry=str(industry_val).strip(),
-            company_size=str(company_size_val).strip()
+            company_size=str(company_size_val).strip(),
+            preferred_language=lang_code
         )
 
         # AI Tools

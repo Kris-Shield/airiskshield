@@ -9,7 +9,7 @@ Assess your company's exposure to AI-related legal, operational, and cybersecuri
 
 # PAGE 1 of 5 — Company & AI Footprint
 
-*Section Goal: Baseline organization profile and active AI tooling footprint.*
+*Section Goal: Baseline organization profile, language selection, and active AI tooling footprint.*
 
 ## Company Name
 Short Answer
@@ -36,6 +36,17 @@ Dropdown
 - United States
 - Other (EU)
 - Other (Non-EU)
+
+## Preferred Report Language / Język Raportu
+Multiple Choice
+*Guidance: Select the language in which you wish to receive your executive report.*
+- English (Recommended for International Executives)
+- German (Deutsch)
+- French (Français)
+- Dutch (Nederlands)
+- Polish (Polski)
+- Spanish (Español)
+- Italian (Italiano)
 
 ## Industry Sector
 Dropdown
@@ -236,7 +247,7 @@ Multiple Choice
 
 Thank you for completing the **AI Risk & Liability Audit**.
 
-Your personalized executive **AIRS Report (HTML & Visual Radar)** is being generated and delivered to your corporate email.
+Your personalized executive **AIRS Report (HTML & Visual Radar)** is being generated and delivered to your corporate email in your chosen language.
 
 Your audit report contains:
 - 📊 AIRS 7-Domain Governance Radar & Index

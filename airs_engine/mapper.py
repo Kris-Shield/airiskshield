@@ -1,8 +1,10 @@
 """
-AIRS Data Mapper Module (Ultimate Multilingual Enterprise Version)
+AIRS Data Mapper Module (Robust Live Tally Webhook Parser)
 Converts raw Tally webhook submissions into standardized AIRS assessment objects.
+Supports live Tally option ID resolution, fuzzy label matching, and multi-language form fields.
 """
 
+import re
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
@@ -48,90 +50,239 @@ class AIRSAssessmentObject:
 
 class TallyDataMapper:
     @staticmethod
+    def _normalize_string(text: str) -> str:
+        if not text:
+            return ""
+        # Strip HTML tags & non-alphanumeric chars for matching
+        clean = re.sub(r'<[^>]+>', '', str(text))
+        return re.sub(r'[^a-zA-Z0-9]', '', clean).lower()
+
+    @staticmethod
+    def _resolve_field_value(f: Dict[str, Any]) -> Any:
+        val = f.get("value")
+        options = f.get("options", [])
+
+        if val is None:
+            return None
+
+        # Map option IDs to human readable text if options array exists
+        option_map = {}
+        if isinstance(options, list):
+            for opt in options:
+                if isinstance(opt, dict) and "id" in opt and "text" in opt:
+                    option_map[opt["id"]] = opt["text"]
+
+        if isinstance(val, list):
+            resolved_list = []
+            for item in val:
+                if isinstance(item, str) and item in option_map:
+                    resolved_list.append(option_map[item])
+                else:
+                    resolved_list.append(str(item))
+            return resolved_list
+        elif isinstance(val, str) and val in option_map:
+            return option_map[val]
+        return val
+
+    @staticmethod
     def parse_tally_submission(raw_json: Dict[str, Any]) -> AIRSAssessmentObject:
         data = raw_json.get("data", raw_json)
         response_id = data.get("responseId", "resp_mock_001")
         submission_time = raw_json.get("createdAt", "2026-08-06T16:00:00.000Z")
 
         fields = data.get("fields", [])
-        field_map = {}
+        
+        # Build normalized lookup dictionary
+        normalized_map = {}
+        exact_key_map = {}
+
         for f in fields:
             label = f.get("label", "").strip()
             key = f.get("key", "").strip()
-            val = f.get("value")
-            if label:
-                field_map[label] = val
-            if key:
-                field_map[key] = val
+            val = TallyDataMapper._resolve_field_value(f)
 
-        # Company Info
+            if key:
+                exact_key_map[key] = val
+            if label:
+                norm_label = TallyDataMapper._normalize_string(label)
+                normalized_map[norm_label] = val
+                exact_key_map[label] = val
+
+        def get_val(keywords: List[str], default_val: Any = None) -> Any:
+            # 1. Try exact keys/labels first
+            for kw in keywords:
+                if kw in exact_key_map and exact_key_map[kw] is not None:
+                    return exact_key_map[kw]
+            
+            # 2. Try normalized fuzzy label matching
+            for kw in keywords:
+                norm_kw = TallyDataMapper._normalize_string(kw)
+                for norm_label, val in normalized_map.items():
+                    if norm_kw in norm_label and val is not None:
+                        return val
+
+            return default_val
+
+        # 1. Company Name
+        company_name_val = get_val([
+            "Company Name", "company_name", "nazwa firmy", "company"
+        ], "Acme Software Solutions Ltd.")
+
+        # 2. Corporate Email
+        corporate_email_val = get_val([
+            "Corporate Email", "corporate_email", "email", "e-mail", "służbowy adres email"
+        ], "airiskshield@gmail.com")
+
+        # 3. Country
+        country_val = get_val([
+            "Country of Operation", "country", "kraj", "primary country"
+        ], "Poland")
+
+        # 4. Industry
+        industry_val = get_val([
+            "Industry", "Industry Sector", "branża", "sektor"
+        ], "Software Development & IT")
+
+        # 5. Company Size
+        company_size_val = get_val([
+            "Company Size", "company_size", "wielkość firmy", "liczba pracowników"
+        ], "10-49 employees")
+
         company = CompanyProfile(
-            name=str(field_map.get("Company Name") or field_map.get("company_name") or "Acme Corp"),
-            email=str(field_map.get("Corporate Email") or field_map.get("corporate_email") or "contact@example.com"),
-            country=str(field_map.get("Country of Operation") or field_map.get("country") or "Poland"),
-            industry=str(field_map.get("Industry") or field_map.get("industry") or "Technology"),
-            company_size=str(field_map.get("Company Size") or field_map.get("company_size") or "10-49 employees")
+            name=str(company_name_val).strip(),
+            email=str(corporate_email_val).strip(),
+            country=str(country_val).strip(),
+            industry=str(industry_val).strip(),
+            company_size=str(company_size_val).strip()
         )
 
-        # AI Adoption
-        tools_val = field_map.get("Which AI tools does your company currently use?") or field_map.get("ai_tools") or []
-        tools = [t.strip() for t in tools_val.split(",")] if isinstance(tools_val, str) else list(tools_val)
+        # AI Tools
+        tools_val = get_val([
+            "Which AI tools does your company currently use?", "ai_tools", "narzędzia ai", "tools"
+        ], ["ChatGPT", "Claude", "Microsoft Copilot"])
+        tools = [t.strip() for t in tools_val] if isinstance(tools_val, list) else [t.strip() for t in str(tools_val).split(",")]
 
-        licensing = str(field_map.get("Do employees use company-managed paid subscriptions or personal free accounts?") or field_map.get("ai_licensing_tier") or "Mostly personal free accounts")
+        # Licensing Tier
+        licensing_val = get_val([
+            "Do employees use company-managed paid subscriptions or personal free accounts?",
+            "ai_licensing_tier", "subskrypcji firmowych", "licencjonowanie"
+        ], "Mostly personal free accounts")
 
-        ai_role = str(field_map.get("Does your company develop custom AI software, fine-tune models, or integrate LLM APIs into your products?") or field_map.get("ai_role_architecture") or "Off-the-shelf apps only")
+        # Active Users
+        active_users_val = get_val([
+            "Approximately how many employees actively use AI every week?",
+            "active_users", "aktywnie korzysta", "użytkowników"
+        ], "6-20")
 
-        data_residency = str(field_map.get("Where are your primary AI data processing servers hosted?") or field_map.get("data_residency") or "Unknown / Provider Default")
+        # AI Role / Architecture
+        ai_role_val = get_val([
+            "Does your company develop custom AI software, fine-tune models, or integrate LLM APIs into your products?",
+            "ai_role_architecture", "custom ai", "llm api", "bazy rag"
+        ], "Yes, we build custom AI features / RAG / API integrations into our products")
 
-        shadow_control = str(field_map.get("How does your organization detect or control unauthorized AI tool usage (Shadow AI)?") or field_map.get("shadow_ai_control") or "None")
+        # Data Residency
+        residency_val = get_val([
+            "Where are your primary AI data processing servers hosted?",
+            "data_residency", "serwery", "jurysdykcja"
+        ], "US Cloud Data Centers")
+
+        # Shadow AI Control
+        shadow_val = get_val([
+            "How does your organization detect or control unauthorized AI tool usage (Shadow AI)?",
+            "shadow_ai_control", "shadow ai", "nieautoryzowane"
+        ], "Informal policy guidance (Trust-based, no technical blocks)")
 
         ai_adoption = AIAdoptionProfile(
             tools=tools,
-            licensing_tier=licensing,
-            active_users=str(field_map.get("Approximately how many employees actively use AI every week?") or field_map.get("active_users") or "1-5"),
-            ai_role_architecture=ai_role,
-            data_residency=data_residency,
-            shadow_ai_control=shadow_control
+            licensing_tier=str(licensing_val),
+            active_users=str(active_users_val),
+            ai_role_architecture=str(ai_role_val),
+            data_residency=str(residency_val),
+            shadow_ai_control=str(shadow_val)
         )
 
-        # Answers
-        conf_upload = field_map.get("Do employees upload confidential customer or company information into AI tools?") or field_map.get("confidential_data_upload")
+        # Confidential Uploads
+        conf_upload = get_val([
+            "Do employees upload confidential customer or company information into AI tools?",
+            "confidential_data_upload", "poufne dane", "upload"
+        ], "Yes")
         conf_upload_bool = str(conf_upload).strip().lower() in ["yes", "true", "tak"]
 
-        conf_details = str(field_map.get("If yes, what type of information is uploaded?") or field_map.get("confidential_data_details") or "")
-        human_rev = str(field_map.get("Are AI-generated outputs reviewed before being delivered to customers?") or field_map.get("human_review") or "Usually")
-        ai_pol = str(field_map.get("Does your company have an official AI Usage Policy?") or field_map.get("ai_policy") or "No")
-        ai_train = str(field_map.get("Do employees receive AI-related training?") or field_map.get("ai_training") or "No")
+        conf_details_val = get_val([
+            "If yes, what type of information is uploaded?",
+            "confidential_data_details", "jakie rodzaje informacji"
+        ], "Source code, client API keys, contracts, customer support tickets.")
 
-        hr_uses_val = field_map.get("Is AI used for any of the following?") or field_map.get("ai_hr_automation") or []
-        hr_uses = [h.strip() for h in hr_uses_val.split(",")] if isinstance(hr_uses_val, str) else list(hr_uses_val)
+        human_rev_val = get_val([
+            "Are AI-generated outputs reviewed before being delivered to customers?",
+            "Are AI-generated outputs reviewed by humans before being delivered to customers?",
+            "human_review", "weryfikowane przez człowieka"
+        ], "Usually")
 
-        sells_content = field_map.get("Do you sell AI-generated content or code to customers?") or field_map.get("sell_ai_content")
-        sells_content_bool = str(sells_content).strip().lower() in ["yes", "true", "tak"]
+        ai_policy_val = get_val([
+            "Does your company have an official AI Usage Policy?",
+            "ai_policy", "polityka korzystania z ai"
+        ], "No")
 
-        discloses_contracts = str(field_map.get("If yes, do your contracts disclose AI assistance?") or field_map.get("contract_disclose_ai") or "No")
+        ai_train_val = get_val([
+            "Do employees receive AI-related training?",
+            "ai_training", "szkolenia"
+        ], "No")
 
-        public_ai = str(field_map.get("Does your company publicly publish or deploy AI-generated content or code?") or field_map.get("public_ai_content") or "No")
+        hr_uses_val = get_val([
+            "Is AI used for any of the following?",
+            "ai_hr_automation", "zastosowań"
+        ], ["Recruitment", "CV Screening"])
+        hr_uses = [h.strip() for h in hr_uses_val] if isinstance(hr_uses_val, list) else [h.strip() for h in str(hr_uses_val).split(",")]
 
-        incidents_val = field_map.get("Has your company experienced any AI-related incidents during the last 12 months?") or field_map.get("ai_incidents") or []
-        incidents = [i.strip() for i in incidents_val.split(",")] if isinstance(incidents_val, str) else list(incidents_val)
+        sells_content_val = get_val([
+            "Do you sell AI-generated content or code to customers?",
+            "Do you sell AI-generated content, graphics, or code to commercial customers?",
+            "sell_ai_content", "sprzedają państwo treści"
+        ], "Yes")
+        sells_content_bool = str(sells_content_val).strip().lower() in ["yes", "true", "tak"]
 
-        concern = str(field_map.get("What is currently your biggest AI concern?") or field_map.get("biggest_concern") or "EU AI Act")
-        consult_val = field_map.get("Would you like a complimentary 30-minute consultation to discuss your report?") or field_map.get("consultation_request")
+        discloses_val = get_val([
+            "If yes, do your contracts disclose AI assistance?",
+            "If yes, do your client contracts explicitly disclose AI assistance and define IP ownership?",
+            "contract_disclose_ai", "umowy z klientami"
+        ], "No")
+
+        public_ai_val = get_val([
+            "Does your company publicly publish or deploy AI-generated content or code?",
+            "public_ai_content", "publikujemy materiały"
+        ], "Yes, publicly deployed in marketing materials or software applications")
+
+        incidents_val = get_val([
+            "Has your company experienced any AI-related incidents during the last 12 months?",
+            "ai_incidents", "incydenty"
+        ], ["AI Hallucination", "Customer Complaint"])
+        incidents = [i.strip() for i in incidents_val] if isinstance(incidents_val, list) else [i.strip() for i in str(incidents_val).split(",")]
+
+        concern_val = get_val([
+            "What is currently your biggest AI concern?",
+            "biggest_concern", "największą obawą"
+        ], "EU AI Act")
+
+        consult_val = get_val([
+            "Would you like a complimentary 30-minute consultation to discuss your report?",
+            "Would you like a complimentary 30-minute consultation with an AI Governance Advisor to review your report?",
+            "consultation_request", "konsultacji"
+        ], "Yes")
         consult_bool = str(consult_val).strip().lower() in ["yes", "true", "tak"]
 
         answers = AssessmentAnswers(
             confidential_data_upload=conf_upload_bool,
-            confidential_data_details=conf_details,
-            human_review_frequency=human_rev,
-            ai_policy_status=ai_pol,
-            ai_training_status=ai_train,
+            confidential_data_details=str(conf_details_val),
+            human_review_frequency=str(human_rev_val),
+            ai_policy_status=str(ai_policy_val),
+            ai_training_status=str(ai_train_val),
             hr_automated_uses=hr_uses,
             sells_ai_content=sells_content_bool,
-            discloses_ai_in_contracts=discloses_contracts,
-            public_ai_content=public_ai,
+            discloses_ai_in_contracts=str(discloses_val),
+            public_ai_content=str(public_ai_val),
             past_incidents=incidents,
-            biggest_concern=concern,
+            biggest_concern=str(concern_val),
             consultation_requested=consult_bool
         )
 

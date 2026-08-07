@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional
 
 # Core Engine Imports
-from .mapper import TallyDataMapper
+from .mapper import TallyDataMapper, AIRSAssessmentObject, CompanyProfile, AIAdoptionProfile, AssessmentAnswers
 from .scoring import AIRSScoringEngine
 from .report_generator import AIReportGenerator
 from .pdf_exporter import ReportExporter
@@ -32,11 +32,53 @@ def save_submissions_db(data: List[Dict[str, Any]]):
     with open(SUBMISSIONS_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
+def rebuild_report_from_db_record(sub: Dict[str, Any], output_path: str):
+    """Dynamically regenerates HTML report from stored submission DB record."""
+    comp_data = sub.get("data", {}).get("company", {})
+    adopt_data = sub.get("data", {}).get("ai_adoption", {})
+    ans_data = sub.get("data", {}).get("answers", {})
+
+    company = CompanyProfile(
+        name=comp_data.get("name", "Unknown Company"),
+        email=comp_data.get("email", "unknown@example.com"),
+        country=comp_data.get("country", "Poland"),
+        industry=comp_data.get("industry", "Technology"),
+        company_size=comp_data.get("company_size", "10-49 employees")
+    )
+    ai_adoption = AIAdoptionProfile(
+        tools=adopt_data.get("tools", []),
+        licensing_tier=adopt_data.get("licensing_tier", "Mostly personal free accounts"),
+        active_users=adopt_data.get("active_users", "1-5"),
+        ai_role_architecture=adopt_data.get("ai_role_architecture", "Off-the-shelf apps only")
+    )
+    answers = AssessmentAnswers(
+        confidential_data_upload=ans_data.get("confidential_data_upload", False),
+        confidential_data_details=ans_data.get("confidential_data_details", ""),
+        human_review_frequency=ans_data.get("human_review_frequency", "Usually"),
+        ai_policy_status=ans_data.get("ai_policy_status", "No"),
+        ai_training_status=ans_data.get("ai_training_status", "No"),
+        hr_automated_uses=ans_data.get("hr_automated_uses", []),
+        sells_ai_content=ans_data.get("sells_ai_content", False),
+        discloses_ai_in_contracts=ans_data.get("discloses_ai_in_contracts", "No"),
+        past_incidents=ans_data.get("past_incidents", []),
+        biggest_concern=ans_data.get("biggest_concern", "EU AI Act")
+    )
+    assessment = AIRSAssessmentObject(
+        response_id=sub.get("id", "resp_000"),
+        submission_time=sub.get("createdAt", datetime.now().isoformat()),
+        company=company,
+        ai_adoption=ai_adoption,
+        answers=answers
+    )
+    scoring = AIRSScoringEngine.evaluate(assessment)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    ReportExporter.export_html_report(assessment, scoring, output_path)
+
 def process_tally_payload(raw_json: Dict[str, Any]) -> Dict[str, Any]:
     assessment = TallyDataMapper.parse_tally_submission(raw_json)
     scoring = AIRSScoringEngine.evaluate(assessment)
 
-    company_slug = assessment.company.name.replace(" ", "_").replace(".", "").replace("/", "")
+    company_slug = assessment.company.name.replace(" ", "_").replace(".", "").replace("/", "").replace(":", "")
     output_filename = f"AI_Risk_Assessment_{company_slug}.html"
     output_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output", output_filename)
 
@@ -240,10 +282,34 @@ try:
 
     @app.get("/reports/{filename}", response_class=HTMLResponse)
     def get_report(filename: str):
-        report_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output", filename)
+        report_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
+        report_path = os.path.join(report_dir, filename)
+
+        # 1. Direct file check
         if os.path.exists(report_path):
             with open(report_path, "r", encoding="utf-8") as f:
                 return f.read()
+
+        # 2. Dynamic rebuild on missing file (Cloud container restart resilience)
+        db = load_submissions_db()
+        for sub in db:
+            rec_file = sub.get("reportFile", "")
+            if rec_file == filename or rec_file.lower() == filename.lower() or filename.lower() in rec_file.lower():
+                try:
+                    rebuild_report_from_db_record(sub, report_path)
+                    if os.path.exists(report_path):
+                        with open(report_path, "r", encoding="utf-8") as f:
+                            return f.read()
+                except Exception as e:
+                    print(f"[!] Dynamic report rebuild failed: {str(e)}")
+
+        # 3. Fallback check: if any .html file exists in output directory matching name
+        if os.path.exists(report_dir):
+            for existing_file in os.listdir(report_dir):
+                if existing_file.endswith(".html") and (filename.lower() in existing_file.lower() or existing_file.lower() in filename.lower()):
+                    with open(os.path.join(report_dir, existing_file), "r", encoding="utf-8") as f:
+                        return f.read()
+
         raise HTTPException(status_code=404, detail="Report file not found")
 
     # Serve static dashboard

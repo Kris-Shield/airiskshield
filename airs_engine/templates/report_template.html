@@ -33,37 +33,6 @@
       margin: 0 auto;
     }
 
-    .lang-bar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 20px;
-      background: #1E293B;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      flex-wrap: wrap;
-    }
-
-    .lang-btn {
-      background: #0F172A;
-      color: #94A3B8;
-      border: 1px solid #334155;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .lang-btn.active {
-      background: #38BDF8;
-      color: #0F172A;
-      border-color: #38BDF8;
-    }
-
     .header-banner {
       display: flex;
       justify-content: space-between;
@@ -245,18 +214,6 @@
 </head>
 <body>
 
-  <!-- EU Multilingual Language Switcher Bar -->
-  <div class="lang-bar">
-    <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">🌐 EU Language / Język:</span>
-    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN 🇬🇧</button>
-    <button class="lang-btn" id="btn-de" onclick="setLang('de')">DE 🇩🇪</button>
-    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">FR 🇫🇷</button>
-    <button class="lang-btn" id="btn-nl" onclick="setLang('nl')">NL 🇳🇱</button>
-    <button class="lang-btn" id="btn-pl" onclick="setLang('pl')">PL 🇵🇱</button>
-    <button class="lang-btn" id="btn-es" onclick="setLang('es')">ES 🇪🇸</button>
-    <button class="lang-btn" id="btn-it" onclick="setLang('it')">IT 🇮🇹</button>
-  </div>
-
   <div class="header-banner">
     <div>
       <div class="brand-title">AI RISK SHIELD</div>
@@ -271,16 +228,16 @@
 
   <!-- Executive Summary -->
   <div class="card">
-    <h3 style="font-size: 16px; color: #38BDF8; margin-bottom: 10px;" id="exec-heading">Executive Summary</h3>
-    <div style="font-size: 14px; color: #CBD5E1; line-height: 1.7;" id="exec-text">
+    <h3 style="font-size: 16px; color: #38BDF8; margin-bottom: 10px;">Executive Summary</h3>
+    <div style="font-size: 14px; color: #CBD5E1; line-height: 1.7;">
       {{ executive_summary }}
     </div>
   </div>
 
   {% if has_high_risk_flags %}
   <div class="alert-box">
-    <strong style="color: #F87171;" id="alert-heading">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
-    <span id="alert-text">{{ high_risk_commentary }}</span>
+    <strong style="color: #F87171;">⚠️ EU AI Act Regulatory High-Risk Alert</strong><br>
+    <span>{{ high_risk_commentary }}</span>
   </div>
   {% endif %}
 
@@ -346,31 +303,5 @@
     <strong>LEGAL DISCLAIMER:</strong> {{ disclaimer }}
   </div>
 
-  <script>
-    const execEN = {{ exec_summary_en_json }};
-    const execPL = {{ exec_summary_pl_json }};
-    const alertEN = {{ alert_en_json }};
-    const alertPL = {{ alert_pl_json }};
-
-    function setLang(lang) {
-      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById('btn-' + lang);
-      if (activeBtn) activeBtn.classList.add('active');
-
-      const execText = document.getElementById('exec-text');
-      const execHeading = document.getElementById('exec-heading');
-      const alertText = document.getElementById('alert-text');
-
-      if (lang === 'pl') {
-        if (execText && execPL) execText.innerText = execPL;
-        if (execHeading) execHeading.innerText = 'Podsumowanie Zarządcze';
-        if (alertText && alertPL) alertText.innerText = alertPL;
-      } else {
-        if (execText && execEN) execText.innerText = execEN;
-        if (execHeading) execHeading.innerText = 'Executive Summary';
-        if (alertText && alertEN) alertText.innerText = alertEN;
-      }
-    }
-  </script>
 </body>
 </html>
